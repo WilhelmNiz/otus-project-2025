@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  jenkins:
+    build: .
+    image: myjenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"   # Веб-интерфейс Jenkins
+      - "50000:50000" # Порт для агентов
+    volumes:
+      - jenkins_home_2:/var/jenkins_home  # Именованный том для данных Jenkins
+      - /var/run/docker.sock:/var/run/docker.sock  # Для использования Docker внутри контейнера
+    restart: unless-stopped  # Политика перезапуска
+
+volumes:
+  jenkins_home_2:  # Объявление тома для persistence данных Jenkins
