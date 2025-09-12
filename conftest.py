@@ -150,10 +150,10 @@ def auth_client(base_url, api_session) -> AuthClient:
     return AuthClient(base_url, api_session)
 
 
-@pytest.fixture(scope="session")
-def booking_client(base_url, api_session) -> BookingClient:
-    """Page Object для бронирований"""
-    return BookingClient(base_url, api_session)
+# @pytest.fixture(scope="session")
+# def booking_client(base_url, api_session) -> BookingClient:
+#     """Page Object для бронирований"""
+#     return BookingClient(base_url, api_session)
 
 
 @pytest.fixture(scope="session")
