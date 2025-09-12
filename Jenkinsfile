@@ -11,9 +11,7 @@ pipeline {
         booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid')
         booleanParam(name: 'ENABLE_VNC', defaultValue: false, description: 'Включить VNC')
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: false, description: 'Включить запись видео')
-        string(name: 'DB_HOST', defaultValue: '192.168.31.202', description: 'Хост БД')
-        string(name: 'DB_USER', defaultValue: 'bn_opencart', description: 'Пользователь БД')
-        string(name: 'DB_PASSWORD', defaultValue: '', description: 'Пароль БД')
+        choice(name: 'TEST_MARK', choices: ['all', 'booking', 'auth', 'backend', 'frontend'], defaultValue: 'all', description: 'Марка тестов для запуска')
     }
 
     environment {
@@ -43,13 +41,22 @@ pipeline {
                 script {
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
 
+                    def marks = ""
+                    if (params.TEST_MARK != 'all') {
+                        marks = params.TEST_MARK
+                    }
+
+                    if (marks) {
+                        pytestCmd += " -m \"${marks}\""
+                    }
+
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
                     pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
                     pytestCmd += " --db_host ${params.DB_HOST}"
                     pytestCmd += " --db_user ${params.DB_USER}"
 
-                    if (params.DB_PASSWORD.trim()) {
+                    if (params.DB_PASSWORD?.trim()) {
                         pytestCmd += " --db_password '${params.DB_PASSWORD}'"
                     } else {
                         pytestCmd += " --db_password ''"
