@@ -41,7 +41,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def pytestCmd = ". venv/bin/activate && python pytest "
+                    def pytestCmd = ". venv/bin/activate && python -m pytest "
 
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
