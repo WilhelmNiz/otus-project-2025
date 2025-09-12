@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from frontend.opencart.page_object.base_test import BasePage
+from frontend.page_object.base_test import BasePage
 
 
 class HeaderElements(BasePage):

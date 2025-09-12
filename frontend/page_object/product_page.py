@@ -1,7 +1,7 @@
 import allure
 from selenium.webdriver.common.by import By
 
-from frontend.opencart.page_object.main_page import MainPage
+from page_object.main_page import MainPage
 
 
 class ProductPage(MainPage):

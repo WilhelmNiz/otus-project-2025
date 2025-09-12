@@ -1,11 +1,9 @@
 import random
 import allure
-from frontend.opencart.page_object.base_test import BasePage
+from frontend.page_object.base_test import BasePage
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
-from frontend.opencart.page_object.header_elements import HeaderElements
+from frontend.page_object.header_elements import HeaderElements
 
 
 class MainPage(BasePage):

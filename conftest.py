@@ -12,7 +12,7 @@ from backend.clients.booking_client import BookingClient
 def pytest_addoption(parser):
     parser.addoption("--browser", help="Browser to run tests")
     parser.addoption("--headless", action="store_true", help="Activate headless mode")
-    parser.addoption("--url", "-U", help="Base application url", default="http://172.20.150.187:8081/")
+    parser.addoption("--url", "-U", help="Base application url", default="http://192.168.31.202:8081/")
     parser.addoption("--remote", action="store_true", help="Use remote Selenoid driver")
     parser.addoption("--remote_url", help="Selenoid hub URL", default="http://localhost:4444/wd/hub")
     parser.addoption("--enable_vnc", action="store_true", help="Enable VNC for remote sessions")

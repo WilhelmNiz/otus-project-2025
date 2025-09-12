@@ -6,12 +6,18 @@ services:
     image: myjenkins
     container_name: jenkins
     ports:
-      - "8080:8080"   # Веб-интерфейс Jenkins
-      - "50000:50000" # Порт для агентов
+      - "8080:8080"
+      - "50000:50000"
     volumes:
-      - jenkins_home_2:/var/jenkins_home  # Именованный том для данных Jenkins
-      - /var/run/docker.sock:/var/run/docker.sock  # Для использования Docker внутри контейнера
-    restart: unless-stopped  # Политика перезапуска
+      - jenkins_home_2:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - selenoid_net  # Добавьте эту строку
+    restart: unless-stopped
 
 volumes:
-  jenkins_home_2:  # Объявление тома для persistence данных Jenkins
+  jenkins_home_2:
+
+networks:
+  selenoid_net:
+    external: true  # Используем внешнюю сеть

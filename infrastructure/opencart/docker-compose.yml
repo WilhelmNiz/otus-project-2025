@@ -30,7 +30,7 @@ services:
       - '8081:8080'
       - '443:8443'
     environment:
-      - OPENCART_HOST=172.20.150.187:8081
+      - OPENCART_HOST=192.168.31.202:8081
       - OPENCART_DATABASE_HOST=mariadb
       - OPENCART_DATABASE_PORT_NUMBER=3306
       - OPENCART_DATABASE_USER=bn_opencart
@@ -43,27 +43,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-    networks:
-      - selenoid_net
-
-  tests:
-    build: ../..
-    image: opencart-tests
-    depends_on:
-      opencart:
-        condition: service_healthy
-    command: [
-      "pytest",
-      "tests/",
-      "--url", "http://opencart:8080/",
-      "--remote",
-      "--remote_url", "http://ggr:4444/wd/hub",
-      "--browser", "chrome",
-      "--browser_version", "128.0",
-      "--db_host", "mariadb",
-      "--db_user", "bn_opencart",
-      "--db_name", "bitnami_opencart"
-    ]
     networks:
       - selenoid_net
 
