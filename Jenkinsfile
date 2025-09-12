@@ -26,6 +26,15 @@ pipeline {
             }
         }
 
+        stage('Clean Allure Results') {
+            steps {
+                script {
+                    sh 'rm -rf allure-results || true'
+                    sh 'mkdir -p allure-results'
+                }
+            }
+        }
+
         stage('Setup Python') {
             steps {
                 script {
@@ -76,7 +85,6 @@ pipeline {
                         pytestCmd += " --enable_video"
                     }
 
-                    // Allure результаты
                     pytestCmd += " --alluredir=${env.WORKSPACE}/allure-results"
 
                     echo "Запускаем команду: ${pytestCmd}"
@@ -91,7 +99,12 @@ pipeline {
                         results: [[path: 'allure-results']],
                         reportBuildPolicy: 'ALWAYS'
 
-                    archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: true
+                    script {
+                        def resultsExist = fileExists('allure-results')
+                        if (resultsExist) {
+                            archiveArtifacts artifacts: 'allure-results/**/*', allowEmptyArchive: false
+                        }
+                    }
                 }
             }
         }

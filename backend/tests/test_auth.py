@@ -1,6 +1,7 @@
 import allure
 import pytest
-import time
+from backend.helpers.auth_helpers import assert_valid_token
+from backend.helpers.performance_helpers import measure_response_time, assert_response_time
 
 
 @pytest.mark.auth
@@ -15,22 +16,17 @@ class TestAuthBasicOperations:
         with allure.step("Вызываем create_token() с параметрами по умолчанию"):
             token = auth_client.create_token()
 
-        with allure.step("Проверяем, что токен — непустая строка"):
-            assert isinstance(token, str)
-            assert len(token) > 0
-            assert " " not in token
+        with allure.step("Проверяем валидность токена"):
+            assert_valid_token(token)
 
     def test_auth_response_time(self, auth_client):
         """Тест: проверка времени ответа сервера."""
-        with allure.step(f"Замеряем время выполнения запроса"):
-            start_time = time.time()
-            token = auth_client.create_token()
-            end_time = time.time()
+        with allure.step("Замеряем время выполнения запроса"):
+            token, response_time = measure_response_time(auth_client.create_token)
 
         with allure.step("Проверяем время ответа и валидность токена"):
-            response_time = end_time - start_time
-            assert response_time < 2.0, f"Время ответа слишком большое: {response_time} секунд"
-            assert isinstance(token, str) and len(token) > 0
+            assert_response_time(response_time, 2.0)
+            assert_valid_token(token)
 
     def test_create_token_wrong_content_type(self, auth_client, api_session):
         """Тест: отправка с неверным Content-Type."""

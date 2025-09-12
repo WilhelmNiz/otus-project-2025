@@ -1,10 +1,15 @@
 import allure
 import pytest
 from datetime import date, timedelta
-from backend.models.booking import (
-    BookingCreateRequest,
-    BookingDates
+
+from backend.factories.booking_factory import create_booking_payload, create_update_payload
+from backend.helpers.booking_helpers import (
+    assert_booking_created_correctly,
+    assert_booking_updated_correctly,
+    assert_booking_dates_duration,
+    assert_booking_dates_equal
 )
+from backend.helpers.booking_operations import create_and_get_booking
 
 
 @pytest.mark.booking
@@ -50,60 +55,86 @@ class TestParameterizedBookingCreation:
     ], ids=["english", "russian", "french", "german"])
     def test_create_booking_different_names(self, booking_client, firstname, lastname):
         """Тест: создание бронирований с разными именами."""
-        payload = BookingCreateRequest(
-            firstname=firstname,
-            lastname=lastname,
-            totalprice=100,
-            depositpaid=True,
-            bookingdates=BookingDates(
-                checkin=date.today(),
-                checkout=date.today() + timedelta(days=7)
+        with allure.step("Подготовка payload с разными именами"):
+            payload = create_booking_payload(
+                firstname=firstname,
+                lastname=lastname,
+                totalprice=100
             )
-        )
 
-        booking_id = booking_client.create_booking(payload)
-        booking = booking_client.get_booking_by_id(booking_id)
+        with allure.step("Создание бронирования"):
+            booking_id = booking_client.create_booking(payload)
 
-        assert booking.firstname == firstname
-        assert booking.lastname == lastname
+        with allure.step("Получение созданного бронирования"):
+            booking = booking_client.get_booking_by_id(booking_id)
+
+        with allure.step("Проверка корректности данных бронирования"):
+            expected_data = {
+                "firstname": firstname,
+                "lastname": lastname,
+                "totalprice": 100,
+                "depositpaid": True,
+                "checkin": date.today(),
+                "checkout": date.today() + timedelta(days=7)
+            }
+            assert_booking_created_correctly(booking, expected_data)
 
     @pytest.mark.parametrize("price", [100, 999, 2500, 1], ids=["minimal", "medium", "high", "minimum"])
     def test_create_booking_different_prices(self, booking_client, price):
         """Тест: создание бронирований с разными ценами."""
-        payload = BookingCreateRequest(
-            firstname="Test",
-            lastname="User",
-            totalprice=price,
-            depositpaid=True,
-            bookingdates=BookingDates(
-                checkin=date.today(),
-                checkout=date.today() + timedelta(days=3)
+        with allure.step("Подготовка payload с разными ценами"):
+            payload = create_booking_payload(
+                firstname="Test",
+                lastname="User",
+                totalprice=price,
+                days_delta=3
             )
-        )
 
-        booking_id = booking_client.create_booking(payload)
-        booking = booking_client.get_booking_by_id(booking_id)
+        with allure.step("Создание бронирования"):
+            booking_id = booking_client.create_booking(payload)
 
-        assert booking.totalprice == price
+        with allure.step("Получение созданного бронирования"):
+            booking = booking_client.get_booking_by_id(booking_id)
+
+        with allure.step("Проверка корректности цены"):
+            expected_data = {
+                "firstname": "Test",
+                "lastname": "User",
+                "totalprice": price,
+                "depositpaid": True,
+                "checkin": date.today(),
+                "checkout": date.today() + timedelta(days=3)
+            }
+            assert_booking_created_correctly(booking, expected_data)
 
     @pytest.mark.parametrize("deposit", [True, False], ids=["with_deposit", "without_deposit"])
     def test_create_booking_deposit_options(self, booking_client, deposit):
         """Тест: создание бронирований с разными вариантами депозита."""
-        payload = BookingCreateRequest(
-            firstname="Deposit",
-            lastname="Test",
-            totalprice=200,
-            depositpaid=deposit,
-            bookingdates=BookingDates(
-                checkin=date.today(),
-                checkout=date.today() + timedelta(days=5)
+        with allure.step("Подготовка payload с разными опциями депозита"):
+            payload = create_booking_payload(
+                firstname="Deposit",
+                lastname="Test",
+                totalprice=200,
+                depositpaid=deposit,
+                days_delta=5
             )
-        )
 
-        booking_id = booking_client.create_booking(payload)
-        booking = booking_client.get_booking_by_id(booking_id)
+        with allure.step("Создание бронирования"):
+            booking_id = booking_client.create_booking(payload)
 
-        assert booking.depositpaid == deposit
+        with allure.step("Получение созданного бронирования"):
+            booking = booking_client.get_booking_by_id(booking_id)
+
+        with allure.step("Проверка корректности опции депозита"):
+            expected_data = {
+                "firstname": "Deposit",
+                "lastname": "Test",
+                "totalprice": 200,
+                "depositpaid": deposit,
+                "checkin": date.today(),
+                "checkout": date.today() + timedelta(days=5)
+            }
+            assert_booking_created_correctly(booking, expected_data)
 
 
 @pytest.mark.booking
@@ -117,40 +148,42 @@ class TestBookingDatesScenarios:
         """Тест: создание бронирования с одинаковыми датами заезда/выезда."""
         same_date = date.today()
 
-        payload = BookingCreateRequest(
-            firstname="Same",
-            lastname="Day",
-            totalprice=100,
-            depositpaid=True,
-            bookingdates=BookingDates(
+        with allure.step("Подготовка payload с одинаковыми датами"):
+            payload = create_booking_payload(
+                firstname="Same",
+                lastname="Day",
+                totalprice=100,
                 checkin=same_date,
                 checkout=same_date
             )
-        )
 
-        booking_id = booking_client.create_booking(payload)
-        booking = booking_client.get_booking_by_id(booking_id)
+        with allure.step("Создание бронирования"):
+            booking_id = booking_client.create_booking(payload)
 
-        assert booking.bookingdates.checkin == same_date
-        assert booking.bookingdates.checkout == same_date
+        with allure.step("Получение созданного бронирования"):
+            booking = booking_client.get_booking_by_id(booking_id)
+
+        with allure.step("Проверка одинаковых дат заезда/выезда"):
+            assert_booking_dates_equal(booking, same_date)
 
     def test_create_booking_long_stay(self, booking_client):
         """Тест: создание длительного бронирования."""
-        payload = BookingCreateRequest(
-            firstname="Long",
-            lastname="Stay",
-            totalprice=1000,
-            depositpaid=True,
-            bookingdates=BookingDates(
-                checkin=date.today(),
-                checkout=date.today() + timedelta(days=30)
+        with allure.step("Подготовка payload для длительного проживания"):
+            payload = create_booking_payload(
+                firstname="Long",
+                lastname="Stay",
+                totalprice=1000,
+                days_delta=30
             )
-        )
 
-        booking_id = booking_client.create_booking(payload)
-        booking = booking_client.get_booking_by_id(booking_id)
+        with allure.step("Создание бронирования"):
+            booking_id = booking_client.create_booking(payload)
 
-        assert (booking.bookingdates.checkout - booking.bookingdates.checkin).days == 30
+        with allure.step("Получение созданного бронирования"):
+            booking = booking_client.get_booking_by_id(booking_id)
+
+        with allure.step("Проверка длительности бронирования"):
+            assert_booking_dates_duration(booking, 30)
 
 
 @pytest.mark.booking
@@ -162,59 +195,60 @@ class TestBookingUpdates:
 
     def test_full_update_booking(self, booking_client, auth_token):
         """Тест: полное обновление бронирования."""
-        # Сначала создаем тестовое бронирование
-        payload = BookingCreateRequest(
-            firstname="Тест",
-            lastname="Юзер",
-            totalprice=100,
-            depositpaid=True,
-            bookingdates=BookingDates(
+        with allure.step("Создание тестового бронирования"):
+            booking_id, original_payload, original_booking = create_and_get_booking(
+                booking_client,
+                firstname="Тест",
+                lastname="Юзер",
+                totalprice=100,
                 checkin=date(2025, 1, 1),
                 checkout=date(2025, 1, 5)
             )
-        )
-        booking_id = booking_client.create_booking(payload)
 
-        update_payload = BookingCreateRequest(
-            firstname="Обновленный",
-            lastname="Юзер",
-            totalprice=200,
-            depositpaid=False,
-            bookingdates=BookingDates(
+        with allure.step("Подготовка данных для полного обновления"):
+            update_payload = create_update_payload(
+                firstname="Обновленный",
+                lastname="Юзер",
+                totalprice=200,
+                depositpaid=False,
                 checkin=date(2025, 2, 1),
-                checkout=date(2025, 2, 5)
-            ),
-            additionalneeds="Завтрак"
-        )
+                checkout=date(2025, 2, 5),
+                additionalneeds="Завтрак"
+            )
 
         with allure.step("Полное обновление бронирования"):
             updated = booking_client.update_booking_full(booking_id, auth_token, update_payload)
 
         with allure.step("Проверка обновленных данных"):
-            assert updated.firstname == "Обновленный"
-            assert updated.totalprice == 200
-            assert not updated.depositpaid
+            expected_data = {
+                "firstname": "Обновленный",
+                "lastname": "Юзер",
+                "totalprice": 200,
+                "depositpaid": False,
+                "checkin": date(2025, 2, 1),
+                "checkout": date(2025, 2, 5),
+                "additionalneeds": "Завтрак"
+            }
+            assert_booking_updated_correctly(updated, expected_data)
 
     def test_partial_update_booking(self, booking_client, auth_token):
         """Тест: частичное обновление бронирования."""
-        # Создаем тестовое бронирование
-        payload = BookingCreateRequest(
-            firstname="Частичный",
-            lastname="Тест",
-            totalprice=150,
-            depositpaid=True,
-            bookingdates=BookingDates(
+        with allure.step("Создание тестового бронирования"):
+            booking_id, original_payload, original_booking = create_and_get_booking(
+                booking_client,
+                firstname="Частичный",
+                lastname="Тест",
+                totalprice=150,
                 checkin=date(2025, 3, 1),
                 checkout=date(2025, 3, 5)
             )
-        )
-        booking_id = booking_client.create_booking(payload)
 
-        updates = {
-            "firstname": "НовоеИмя",
-            "lastname": "НоваяФамилия",
-            "additionalneeds": "Ужин"
-        }
+        with allure.step("Подготовка данных для частичного обновления"):
+            updates = {
+                "firstname": "НовоеИмя",
+                "lastname": "НоваяФамилия",
+                "additionalneeds": "Ужин"
+            }
 
         with allure.step("Частичное обновление бронирования"):
             updated = booking_client.partial_update_booking(booking_id, auth_token, updates)
@@ -223,6 +257,11 @@ class TestBookingUpdates:
             assert updated.firstname == "НовоеИмя"
             assert updated.lastname == "НоваяФамилия"
             assert updated.additionalneeds == "Ужин"
+
+            assert updated.totalprice == original_booking.totalprice
+            assert updated.depositpaid == original_booking.depositpaid
+            assert updated.bookingdates.checkin == original_booking.bookingdates.checkin
+            assert updated.bookingdates.checkout == original_booking.bookingdates.checkout
 
 
 @pytest.mark.booking
@@ -234,18 +273,15 @@ class TestBookingDeletion:
 
     def test_delete_booking(self, booking_client, auth_token):
         """Тест: успешное удаление бронирования."""
-        # Создаем бронирование для удаления
-        payload = BookingCreateRequest(
-            firstname="ДляУдаления",
-            lastname="Тест",
-            totalprice=100,
-            depositpaid=True,
-            bookingdates=BookingDates(
+        with allure.step("Создание бронирования для удаления"):
+            booking_id, payload, booking = create_and_get_booking(
+                booking_client,
+                firstname="ДляУдаления",
+                lastname="Тест",
+                totalprice=100,
                 checkin=date(2025, 4, 1),
                 checkout=date(2025, 4, 5)
             )
-        )
-        booking_id = booking_client.create_booking(payload)
 
         with allure.step("Удаление бронирования"):
             result = booking_client.delete_booking(booking_id, auth_token)
