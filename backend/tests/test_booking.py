@@ -3,11 +3,12 @@ import pytest
 from datetime import date, timedelta
 from backend.models.booking import (
     BookingCreateRequest,
-    BookingGetResponse,
     BookingDates
 )
 
 
+@pytest.mark.booking
+@pytest.mark.backend
 @allure.feature("Бронирования")
 @allure.story("Базовые операции с бронированиями")
 class TestBookingBasicOperations:
@@ -17,7 +18,6 @@ class TestBookingBasicOperations:
         """Тест: получить список всех существующих бронирований."""
         with allure.step("Запрашиваем все bookingid"):
             booking_client.get_all_bookings()
-
 
     def test_get_booking_by_existing_id(self, booking_client):
         """Тест: получить детали бронирования по известному ID."""
@@ -35,6 +35,8 @@ class TestBookingBasicOperations:
                 booking_client.get_booking_by_id(999999)
 
 
+@pytest.mark.booking
+@pytest.mark.backend
 @allure.feature("Бронирования")
 @allure.story("Параметризованное создание бронирований")
 class TestParameterizedBookingCreation:
@@ -104,6 +106,8 @@ class TestParameterizedBookingCreation:
         assert booking.depositpaid == deposit
 
 
+@pytest.mark.booking
+@pytest.mark.backend
 @allure.feature("Бронирования")
 @allure.story("Тесты дат бронирований")
 class TestBookingDatesScenarios:
@@ -148,6 +152,9 @@ class TestBookingDatesScenarios:
 
         assert (booking.bookingdates.checkout - booking.bookingdates.checkin).days == 30
 
+
+@pytest.mark.booking
+@pytest.mark.backend
 @allure.feature("Бронирования")
 @allure.story("Обновление бронирований")
 class TestBookingUpdates:
@@ -218,6 +225,8 @@ class TestBookingUpdates:
             assert updated.additionalneeds == "Ужин"
 
 
+@pytest.mark.booking
+@pytest.mark.backend
 @allure.feature("Бронирования")
 @allure.story("Удаление бронирований")
 class TestBookingDeletion:
