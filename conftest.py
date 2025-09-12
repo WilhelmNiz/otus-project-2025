@@ -2,9 +2,12 @@ import pytest
 import allure
 import random
 import pymysql
+import requests
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
 from selenium.webdriver.chrome.options import Options as CHoptions
+from backend.clients.auth_client import AuthClient
+from backend.clients.booking_client import BookingClient
 
 
 def pytest_addoption(parser):
@@ -123,6 +126,41 @@ def pytest_runtest_makereport(item):
                 )
             except Exception as e:
                 print(f"Не удалось сделать скриншот: {e}")
+
+
+@pytest.fixture(scope="session")
+def base_url():
+    return "https://restful-booker.herokuapp.com"
+
+
+@pytest.fixture(scope="session")
+def api_session():
+    """Сессия requests с общими заголовками"""
+    session = requests.Session()
+    session.headers.update({
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    })
+    return session
+
+
+@pytest.fixture(scope="session")
+def auth_client(base_url, api_session) -> AuthClient:
+    """Page Object для авторизации"""
+    return AuthClient(base_url, api_session)
+
+
+@pytest.fixture(scope="session")
+def booking_client(base_url, api_session) -> BookingClient:
+    """Page Object для бронирований"""
+    return BookingClient(base_url, api_session)
+
+
+@pytest.fixture(scope="session")
+def auth_token(auth_client) -> str:
+    """Получаем токен через клиент — инкапсуляция!"""
+    return auth_client.create_token()
+
 
 
 @pytest.fixture(scope="session")
