@@ -23,8 +23,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'Otus_10',
-                url: 'https://github.com/WilhelmNiz/Otus-selenium-2025.git'
+                git branch: 'Otus_project_2025',
+                url: 'https://github.com/WilhelmNiz/otus-project-2025.git'
             }
         }
 
