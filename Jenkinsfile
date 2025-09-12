@@ -62,14 +62,6 @@ pipeline {
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
                     pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
-                    pytestCmd += " --db_host ${params.DB_HOST}"
-                    pytestCmd += " --db_user ${params.DB_USER}"
-
-                    if (params.DB_PASSWORD?.trim()) {
-                        pytestCmd += " --db_password '${params.DB_PASSWORD}'"
-                    } else {
-                        pytestCmd += " --db_password ''"
-                    }
 
                     if (params.HEADLESS.toBoolean()) {
                         pytestCmd += " --headless"
