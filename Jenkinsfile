@@ -24,7 +24,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'Otus_project_2025',
-                url: 'https://github.com/WilhelmNiz/otus-project-2025.git'
+                url: 'https://github.com/WilhelmNiz/otus-project-2025'
             }
         }
 
