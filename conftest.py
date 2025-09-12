@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
 from selenium.webdriver.chrome.options import Options as CHoptions
 from backend.clients.auth_client import AuthClient
-# from backend.clients.booking_client import BookingClient
+from backend.clients.booking_client import BookingClient
 
 
 def pytest_addoption(parser):
@@ -150,10 +150,10 @@ def auth_client(base_url, api_session) -> AuthClient:
     return AuthClient(base_url, api_session)
 
 
-# @pytest.fixture(scope="session")
-# def booking_client(base_url, api_session) -> BookingClient:
-#     """Page Object для бронирований"""
-#     return BookingClient(base_url, api_session)
+@pytest.fixture(scope="session")
+def booking_client(base_url, api_session) -> BookingClient:
+    """Page Object для бронирований"""
+    return BookingClient(base_url, api_session)
 
 
 @pytest.fixture(scope="session")
