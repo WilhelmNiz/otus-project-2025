@@ -7,7 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
 from selenium.webdriver.chrome.options import Options as CHoptions
 from backend.clients.auth_client import AuthClient
-from backend.clients.booking_client import BookingClient
+# from backend.clients.booking_client import BookingClient
 
 
 def pytest_addoption(parser):
