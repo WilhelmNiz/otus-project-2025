@@ -41,7 +41,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    def pytestCmd = ". venv/bin/activate && python -m pytest ./tests/"
+                    def pytestCmd = ". venv/bin/activate && python -m pytest "
 
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
@@ -54,8 +54,6 @@ pipeline {
                     } else {
                         pytestCmd += " --db_password ''"
                     }
-
-                    // pytestCmd += " -n ${params.THREADS}"
 
                     if (params.HEADLESS.toBoolean()) {
                         pytestCmd += " --headless"
