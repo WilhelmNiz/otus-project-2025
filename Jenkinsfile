@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'SELENOID_URL', defaultValue: 'http://localhost:4444/wd/hub', description: 'Адрес Selenoid хаба')
-        string(name: 'OPENCART_URL', defaultValue: 'http://172.20.150.187:8081/', description: 'Адрес приложения OpenCart')
+        string(name: 'SELENOID_URL', defaultValue: 'http://ggr:4444/wd/hub', description: 'Адрес Selenoid хаба')
+        string(name: 'OPENCART_URL', defaultValue: 'http://192.168.31.202:8081/', description: 'Адрес приложения OpenCart')
         choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Браузер для запуска тестов')
         string(name: 'BROWSER_VERSION', defaultValue: '128.0', description: 'Версия браузера')
         string(name: 'THREADS', defaultValue: '1', description: 'Количество потоков (workers) для pytest')
@@ -11,7 +11,7 @@ pipeline {
         booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid')
         booleanParam(name: 'ENABLE_VNC', defaultValue: false, description: 'Включить VNC')
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: false, description: 'Включить запись видео')
-        string(name: 'DB_HOST', defaultValue: '172.20.150.187', description: 'Хост БД')
+        string(name: 'DB_HOST', defaultValue: '192.168.31.202', description: 'Хост БД')
         string(name: 'DB_USER', defaultValue: 'bn_opencart', description: 'Пользователь БД')
         string(name: 'DB_PASSWORD', defaultValue: '', description: 'Пароль БД')
     }
