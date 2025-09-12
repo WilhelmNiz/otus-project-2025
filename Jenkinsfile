@@ -4,14 +4,14 @@ pipeline {
     parameters {
         string(name: 'SELENOID_URL', defaultValue: 'http://ggr:4444/wd/hub', description: 'Адрес Selenoid хаба')
         string(name: 'OPENCART_URL', defaultValue: 'http://192.168.31.202:8081/', description: 'Адрес приложения OpenCart')
-        choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Браузер для запуска тестов')
+        choice(name: 'BROWSER', choices: ['chrome'], description: 'Браузер для запуска тестов')
         string(name: 'BROWSER_VERSION', defaultValue: '128.0', description: 'Версия браузера')
         string(name: 'THREADS', defaultValue: '1', description: 'Количество потоков (workers) для pytest')
         booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Запуск в headless-режиме')
         booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid')
         booleanParam(name: 'ENABLE_VNC', defaultValue: false, description: 'Включить VNC')
         booleanParam(name: 'ENABLE_VIDEO', defaultValue: false, description: 'Включить запись видео')
-        choice(name: 'TEST_MARK', choices: ['all', 'booking', 'auth', 'backend', 'frontend'], defaultValue: 'all', description: 'Марка тестов для запуска')
+        choice(name: 'TEST_MARK', choices: ['all', 'booking', 'auth', 'backend', 'frontend'], description: 'Марка тестов для запуска')
     }
 
     environment {
