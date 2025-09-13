@@ -4,11 +4,9 @@ from frontend.page_object.catalog_page import CatalogPage
 from frontend.page_object.admin_page import AdminPage
 
 
-@pytest.mark.ui
-@pytest.mark.admin
+@pytest.mark.frontend
 @allure.feature("Администрирование OpenCart")
 @allure.story("Авторизация в админ-панели")
-@allure.severity(allure.severity_level.CRITICAL)
 def test_admin_login_logout(browser):
     """Тест авторизации и выхода из админ-панели"""
     with allure.step("Инициализация страницы администрирования"):
@@ -154,7 +152,7 @@ def test_opencart_add_user(browser, user_type):
 @pytest.mark.frontend
 @allure.feature("Управление товарами")
 @allure.story("Добавление и удаление товаров")
-def test_opencart_add_and_delete_product(browser, product_category):
+def test_opencart_add_and_delete_product(browser):
     """Тест по добавлению и удалению нового товара в разделе администратора"""
 
     with allure.step("Инициализация страницы администрирования"):
