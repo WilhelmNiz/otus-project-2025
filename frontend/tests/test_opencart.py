@@ -1,3 +1,5 @@
+import time
+
 import allure
 import pytest
 from frontend.page_object.catalog_page import CatalogPage
@@ -131,7 +133,6 @@ def test_opencart_add_user(browser, user_data):
     firstname = user_data["firstname"]
     lastname = user_data["lastname"]
     password = user_data["password"]
-    role = user_data["role"]
 
     with allure.step("Инициализация страницы администрирования"):
         ap = AdminPage()
@@ -142,32 +143,23 @@ def test_opencart_add_user(browser, user_data):
     with allure.step("Авторизация администратора"):
         ap.authorization_admin(browser)
 
-    with allure.step(f"Добавление пользователя: {firstname} {lastname} ({role})"):
+    with allure.step(f"Добавление пользователя: {firstname} {lastname}"):
         added_firstname, added_lastname, email = ap.add_customers(
             browser,
             firstname=firstname,
             lastname=lastname,
             password=password
         )
-        allure.dynamic.title(f"Добавление {role} пользователя {firstname} {lastname}")
+        allure.dynamic.title(f"Добавление пользователя {firstname} {lastname}")
 
-        # Добавляем информацию о пользователе в отчет
         allure.attach(
-            f"Роль: {role}\nИмя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
+            f"Имя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
             name="Данные добавленного пользователя",
             attachment_type=allure.attachment_type.TEXT
         )
 
     with allure.step("Верификация данных пользователя в системе"):
         ap.verifying_user_data(browser, firstname=added_firstname, lastname=added_lastname, email=email)
-
-    with allure.step(f"Проверка соответствия роли: {role}"):
-        # Здесь можно добавить дополнительную проверку роли, если в системе есть такое поле
-        allure.attach(
-            f"Пользователь {added_firstname} {added_lastname} успешно создан с ролью {role}",
-            name="Результат создания пользователя",
-            attachment_type=allure.attachment_type.TEXT
-        )
 
 
 @pytest.mark.frontend
@@ -194,3 +186,58 @@ def test_opencart_add_and_delete_product(browser):
 
     with allure.step("Удаление товара"):
         ap.delete_product(browser)
+
+@pytest.mark.frontend
+@allure.feature("Список желаний")
+@allure.story("Добавление товара в список желаний")
+def test_add_random_product_to_wish_list(browser):
+    """Тест добавления в список желаний"""
+    # with allure.step("Инициализация страницы администрирования"):
+    #     ap = AdminPage()
+    #     password = 4444
+    #
+    # with allure.step("Открытие админ-панели"):
+    #     browser.open(ap.ADMIN_PAGE)
+    #
+    # with allure.step("Авторизация администратора"):
+    #     ap.authorization_admin(browser)
+    #
+    # with allure.step(f"Добавление пользователя"):
+    #     added_firstname, added_lastname, email = ap.add_customers(
+    #         browser,
+    #         firstname="Test123",
+    #         lastname="Test123",
+    #         password=password
+    #     )
+    #     allure.dynamic.title(f"Добавление пользователя")
+    #
+    #     allure.attach(
+    #         f"Имя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
+    #         name="Данные добавленного пользователя",
+    #         attachment_type=allure.attachment_type.TEXT
+    #     )
+    email = "wilhelmkindly@gmail.com"
+    password = "4444"
+    with allure.step("Инициализация страницы каталога"):
+        cp = CatalogPage()
+
+    with allure.step("Переход на главную страницу"):
+        cp.header.click_logo(browser=browser)
+
+    with allure.step("Установка масштаба страницы для лучшей видимости"):
+        cp.header.set_page_zoom(browser)
+
+    with allure.step("Авторизация пользователя на сайте"):
+        cp.header.account_login(browser, email = email, password=password)
+
+    with allure.step("Переход на главную страницу"):
+        cp.header.click_logo(browser=browser)
+    with allure.step("Установка масштаба страницы для лучшей видимости"):
+        cp.header.set_page_zoom(browser)
+
+    with allure.step("Добавление случайного товара в список желаний"):
+        product_name = cp.add_product_wish_list(browser=browser)
+        allure.dynamic.title(f"Добавление товара '{product_name}' в список желаний")
+
+    with allure.step("Проверка наличия товара в корзине"):
+        cp.checking_product_wish_list(browser=browser, product_name=product_name)
