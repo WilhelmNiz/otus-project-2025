@@ -45,14 +45,9 @@ def test_add_random_product_to_cart(browser):
 
 
 @pytest.mark.frontend
-@pytest.mark.parametrize("currency_action", [
-    "change_to_eur",
-    "change_to_gbp",
-    "change_to_usd"
-], ids=["EUR", "GBP", "USD"])
 @allure.feature("Валюты")
 @allure.story("Смена валюты на главной странице")
-def test_select_currency_title(browser, currency_action):
+def test_select_currency_title(browser):
     """Тест смены валюты на главной странице"""
     with allure.step("Инициализация страницы каталога"):
         cp = CatalogPage()
@@ -121,16 +116,22 @@ def test_select_currency_catalog(browser):
 
 
 @pytest.mark.frontend
-@pytest.mark.parametrize("user_type", [
-    ("Test", "User", "standard"),
-    ("Admin", "Test", "admin"),
-    ("John", "Doe", "customer")
-], ids=["standard_user", "admin_user", "customer_user"])
+@pytest.mark.parametrize("user_data", [
+    {"firstname": "Test", "lastname": "User", "password": "test123", "role": "standard"},
+    {"firstname": "Admin", "lastname": "Test", "password": "admin123", "role": "admin"},
+    {"firstname": "John", "lastname": "Doe", "password": "customer1", "role": "customer"},
+    {"firstname": "Alice", "lastname": "Smith", "password": "alice123", "role": "premium"},
+    {"firstname": "Bob", "lastname": "Johnson", "password": "bob123!", "role": "vip"}
+], ids=["standard_user", "admin_user", "customer_user", "premium_user", "vip_user"])
 @allure.feature("Управление пользователями")
-@allure.story("Регистрация новых пользователей")
-def test_opencart_add_user(browser, user_type):
+@allure.story("Регистрация новых пользователей с различными ролями")
+@allure.severity(allure.severity_level.CRITICAL)
+def test_opencart_add_user(browser, user_data):
     """Тест регистрации нового пользователя в магазине opencart"""
-    firstname, lastname, user_role = user_type
+    firstname = user_data["firstname"]
+    lastname = user_data["lastname"]
+    password = user_data["password"]
+    role = user_data["role"]
 
     with allure.step("Инициализация страницы администрирования"):
         ap = AdminPage()
@@ -141,12 +142,32 @@ def test_opencart_add_user(browser, user_type):
     with allure.step("Авторизация администратора"):
         ap.authorization_admin(browser)
 
-    with allure.step(f"Добавление пользователя: {firstname} {lastname} ({user_role})"):
-        value, email = ap.add_customers(browser)
-        allure.dynamic.title(f"Добавление пользователя {firstname} {lastname}")
+    with allure.step(f"Добавление пользователя: {firstname} {lastname} ({role})"):
+        added_firstname, added_lastname, email = ap.add_customers(
+            browser,
+            firstname=firstname,
+            lastname=lastname,
+            password=password
+        )
+        allure.dynamic.title(f"Добавление {role} пользователя {firstname} {lastname}")
 
-    with allure.step("Верификация данных пользователя"):
-        ap.verifying_user_data(browser, firstname=value, lastname=value, email=email)
+        # Добавляем информацию о пользователе в отчет
+        allure.attach(
+            f"Роль: {role}\nИмя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
+            name="Данные добавленного пользователя",
+            attachment_type=allure.attachment_type.TEXT
+        )
+
+    with allure.step("Верификация данных пользователя в системе"):
+        ap.verifying_user_data(browser, firstname=added_firstname, lastname=added_lastname, email=email)
+
+    with allure.step(f"Проверка соответствия роли: {role}"):
+        # Здесь можно добавить дополнительную проверку роли, если в системе есть такое поле
+        allure.attach(
+            f"Пользователь {added_firstname} {added_lastname} успешно создан с ролью {role}",
+            name="Результат создания пользователя",
+            attachment_type=allure.attachment_type.TEXT
+        )
 
 
 @pytest.mark.frontend

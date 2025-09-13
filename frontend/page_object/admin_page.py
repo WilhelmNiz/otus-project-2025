@@ -151,12 +151,11 @@ class AdminPage(MainPage):
                 self.logger.info("Авторизация прошла успешно")
 
     @allure.step("Добавление нового клиента")
-    def add_customers(self, browser):
-        """Добавление нового клиента в систему с генерацией тестовых данных"""
-        self.logger.info("Начало добавления нового клиента")
+    def add_customers(self, browser, firstname="Test", lastname="Test", password="Test"):
+        """Добавление нового клиента в систему с возможностью кастомизации данных"""
+        self.logger.info(f"Начало добавления нового клиента: {firstname} {lastname}")
         id = str(uuid.uuid4())
-        email = id + "@test.com"
-        value = "Test"
+        email = f"{firstname.lower()}.{lastname.lower()}.{id[:8]}@test.com"
 
         with allure.step("1. Открыть меню клиентов"):
             self.logger.info("Открытие меню клиентов")
@@ -174,15 +173,15 @@ class AdminPage(MainPage):
             )
 
         with allure.step("3. Заполнить данные клиента"):
-            self.logger.info(f"Заполнение данных клиента: {value}")
-            self.data_entry(browser=browser, target=self.INPUT_FIRSTNAME, value=value)
-            self.data_entry(browser=browser, target=self.INPUT_LASTNAME, value=value)
+            self.logger.info(f"Заполнение данных клиента: {firstname} {lastname}")
+            self.data_entry(browser=browser, target=self.INPUT_FIRSTNAME, value=firstname)
+            self.data_entry(browser=browser, target=self.INPUT_LASTNAME, value=lastname)
             self.data_entry(browser=browser, target=self.INPUT_E_MAIL, value=email)
-            self.data_entry(browser=browser, target=self.INPUT_PASSWORD, value=value)
-            self.data_entry(browser=browser, target=self.INPUT_CONFIRM, value=value)
+            self.data_entry(browser=browser, target=self.INPUT_PASSWORD, value=password)
+            self.data_entry(browser=browser, target=self.INPUT_CONFIRM, value=password)
 
             allure.attach(
-                f"Имя: {value}\nФамилия: {value}\nEmail: {email}\nПароль: {value}",
+                f"Имя: {firstname}\nФамилия: {lastname}\nEmail: {email}\nПароль: {password}",
                 name="Введенные данные клиента",
                 attachment_type=allure.attachment_type.TEXT
             )
@@ -196,8 +195,8 @@ class AdminPage(MainPage):
             self.logger.info("Возврат к списку клиентов")
             self.wait_and_click(browser=browser, target_locator=self.BUTTON_BACK)
 
-        self.logger.info(f"Клиент успешно добавлен: {value}, {email}")
-        return value, email
+        self.logger.info(f"Клиент успешно добавлен: {firstname} {lastname}, {email}")
+        return firstname, lastname, email
 
     @allure.step("Проверка данных пользователя")
     def verifying_user_data(self, browser, firstname, lastname, email):
