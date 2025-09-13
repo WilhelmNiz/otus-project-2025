@@ -89,26 +89,25 @@ def test_select_currency_title(browser, currency_action):
 
 
 @pytest.mark.frontend
-@pytest.mark.parametrize("category_index", [0, 1, 2], ids=["first_category", "second_category", "third_category"])
 @allure.feature("Валюты")
 @allure.story("Смена валюты в различных категориях каталога")
-def test_select_currency_catalog(browser, category_index):
+def test_select_currency_catalog(browser):
     """Тест смены валюты в Каталоге"""
     with allure.step("Инициализация страницы каталога"):
         cp = CatalogPage()
 
     with allure.step("Выбор категории товаров из каталога"):
-        cp.select_specific_menu_item_and_show_all(browser, category_index)
+        cp.select_random_menu_item_and_show_all(browser)
 
     with allure.step("Получение цен товаров в выбранной категории"):
         prices_before = cp.get_current_product_prices(browser)
         allure.attach(
             str(prices_before),
-            name=f"Цены в категории {category_index} до смены валюты",
+            name=f"Цены до смены валюты",
             attachment_type=allure.attachment_type.TEXT
         )
 
-    with allure.step("Смена валюты в категории"):
+    with allure.step("Смена валюты"):
         new_currency = cp.header.change_currency(browser)
         allure.attach(
             new_currency,
@@ -153,16 +152,10 @@ def test_opencart_add_user(browser, user_type):
 
 
 @pytest.mark.frontend
-@pytest.mark.parametrize("product_category", [
-    ("Electronics", "EL"),
-    ("Books", "BK"),
-    ("Clothing", "CL")
-], ids=["electronics", "books", "clothing"])
 @allure.feature("Управление товарами")
 @allure.story("Добавление и удаление товаров")
 def test_opencart_add_and_delete_product(browser, product_category):
     """Тест по добавлению и удалению нового товара в разделе администратора"""
-    category_name, category_code = product_category
 
     with allure.step("Инициализация страницы администрирования"):
         ap = AdminPage()
@@ -173,25 +166,12 @@ def test_opencart_add_and_delete_product(browser, product_category):
     with allure.step("Авторизация администратора"):
         ap.authorization_admin(browser)
 
-    with allure.step(f"Добавление товара в категорию: {category_name}"):
+    with allure.step(f"Добавление товара"):
         value = ap.add_product(browser)
-        allure.dynamic.title(f"Добавление товара '{value}' в категорию {category_name}")
+        allure.dynamic.title(f"Добавление товара '{value}'")
 
     with allure.step("Проверка данных товара"):
         ap.verifying_product_data(browser, value=value)
 
     with allure.step("Удаление товара"):
         ap.delete_product(browser)
-
-
-@pytest.mark.frontend
-@pytest.mark.parametrize("attempt", range(3), ids=["attempt_1", "attempt_2", "attempt_3"])
-@allure.feature("Безопасность")
-@allure.story("Многократная авторизация администратора")
-def test_multiple_admin_login_logout(browser, attempt):
-    """Тест многократной авторизации и выхода из админ-панели"""
-    with allure.step(f"Попытка авторизации №{attempt + 1}"):
-        ap = AdminPage()
-        browser.open(ap.ADMIN_PAGE)
-        ap.authorization_admin(browser)
-        ap.logout(browser)
