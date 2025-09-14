@@ -34,16 +34,14 @@ def test_add_random_product_to_cart(browser):
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser=browser)
-
-    with allure.step("Установка масштаба страницы для лучшей видимости"):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Добавление случайного товара в корзину"):
-        product_name = cp.add_product_cart(browser=browser)
+        product_name = cp.add_product_to_list(browser=browser)
         allure.dynamic.title(f"Добавление товара '{product_name}' в корзину")
 
     with allure.step("Проверка наличия товара в корзине"):
-        cp.checking_product_cart(browser=browser, product_name=product_name)
+        cp.checking_product_in_list(browser=browser, product_name=product_name)
 
 
 @pytest.mark.frontend
@@ -218,8 +216,6 @@ def test_add_random_product_to_wish_list(browser):
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser=browser)
-
-    with allure.step("Установка масштаба страницы для лучшей видимости"):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Авторизация пользователя на сайте"):
@@ -227,12 +223,11 @@ def test_add_random_product_to_wish_list(browser):
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser=browser)
-    with allure.step("Установка масштаба страницы для лучшей видимости"):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Добавление случайного товара в список желаний"):
-        product_name = cp.add_product_wish_list(browser=browser)
+        product_name = cp.add_product_to_list(browser=browser, list_type="wishlist")
         allure.dynamic.title(f"Добавление товара '{product_name}' в список желаний")
 
-    with allure.step("Проверка наличия товара в корзине"):
-        cp.checking_product_wish_list(browser=browser, product_name=product_name)
+    with allure.step("Проверка наличия товара в список желаний"):
+        cp.checking_product_in_list(browser=browser, product_name=product_name, list_type="wishlist")
