@@ -1,5 +1,3 @@
-import time
-
 import allure
 import pytest
 from frontend.page_object.catalog_page import CatalogPage

@@ -21,7 +21,7 @@ class MainPage(BasePage):
         self.header = HeaderElements()
 
     @allure.step("Добавление случайного товара в список")
-    def add_product_to_list(self, browser, list_type):
+    def add_product_to_list(self, browser, list_type="cart"):
         """
         Универсальный метод добавления товара в список (cart или wishlist)
 
