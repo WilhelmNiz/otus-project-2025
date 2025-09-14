@@ -115,4 +115,3 @@ class BasePage:
         except Exception as e:
             self.logger.error(f"Элементы {target_locator} не найдены: {str(e)}")
             raise
-

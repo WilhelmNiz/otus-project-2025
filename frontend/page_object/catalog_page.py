@@ -4,20 +4,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from frontend.page_object.main_page import MainPage
+from frontend.page_object.base_page_with_header import BasePageWithHeader
 
 
-class CatalogPage(MainPage):
+class CatalogPage(BasePageWithHeader):
     """Страница каталога товаров"""
 
-    # Путь до цен товаров
     PRICE = "div.price"
-
-    # Путь до списка товаров
-    PRODUCT_LIST = "#product-list"
-
-    # Путь до наименований товаров
-    PRODUCT_NAME = ".product-thumb h4 a"
 
     @allure.step("Выбрать случайный пункт меню и нажать 'Показать все'")
     def select_random_menu_item_and_show_all(self, browser):
@@ -90,30 +83,3 @@ class CatalogPage(MainPage):
 
         assert original_prices != new_prices, "Цены товаров не изменились после смены валюты"
         self.logger.info("Цены успешно изменились после смены валюты")
-
-    @allure.step("Проверка элементов на странице каталога")
-    def check_elements_catalog_page(self, browser):
-        """Проверка наличия основных элементов на странице каталога"""
-        self.logger.info("Проверка элементов на странице каталога")
-
-        with allure.step("1. Проверить наличие списка товаров"):
-            self.logger.info("Проверка списка товаров")
-            self.wait_element(browser, target_locator=self.PRODUCT_LIST, method=By.CSS_SELECTOR)
-
-        with allure.step("2. Проверить кнопку поиска"):
-            self.logger.info("Проверка кнопки поиска")
-            self.wait_element(browser, target_locator=self.header.SEARCH_BUTTON, method=By.CSS_SELECTOR)
-
-        with allure.step("3. Проверить поле ввода поиска"):
-            self.logger.info("Проверка поля ввода поиска")
-            self.wait_element(browser, target_locator=self.header.SEARCH_INPUT, method=By.CSS_SELECTOR)
-
-        with allure.step("4. Проверить наличие логотипа"):
-            self.logger.info("Проверка логотипа")
-            self.wait_element(browser, target_locator=self.header.LOGO)
-
-        with allure.step("5. Проверить названия товаров"):
-            self.logger.info("Проверка названий товаров")
-            self.wait_element(browser, target_locator=self.PRODUCT_NAME, method=By.CSS_SELECTOR)
-
-        self.logger.info("Все элементы на странице каталога присутствуют")

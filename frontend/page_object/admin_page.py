@@ -6,10 +6,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from frontend.page_object.main_page import MainPage
+from frontend.page_object.base_page_with_header import BasePageWithHeader
 
 
-class AdminPage(MainPage):
+class AdminPage(BasePageWithHeader):
     # Админка
     ADMIN_PAGE = "/administration"
     ADMIN_LOGIN_CARD = ".card"
@@ -385,33 +385,6 @@ class AdminPage(MainPage):
             )
 
         self.logger.info("Товар успешно удален")
-
-    @allure.step("Проверка элементов на странице администрирования")
-    def check_elements_admin_page(self, browser):
-        """Проверка наличия основных элементов на странице входа в админ-панель"""
-        self.logger.info("Проверка элементов на странице администрирования")
-
-        with allure.step("1. Проверить наличие карточки авторизации"):
-            self.logger.info("Проверка карточки авторизации")
-            self.wait_element(browser, target_locator=self.ADMIN_LOGIN_CARD, method=By.CSS_SELECTOR)
-
-        with allure.step("2. Проверить поле ввода пароля"):
-            self.logger.info("Проверка поля ввода пароля")
-            self.wait_element(browser, target_locator=self.INPUT_PASSWORD)
-
-        with allure.step("3. Проверить поле ввода логина"):
-            self.logger.info("Проверка поля ввода логина")
-            self.wait_element(browser, target_locator=self.INPUT_USERNAME)
-
-        with allure.step("4. Проверить кнопку входа"):
-            self.logger.info("Проверка кнопки входа")
-            self.wait_element(browser, target_locator=self.BUTTON_LOGIN)
-
-        with allure.step("5. Проверить заголовок карточки авторизации"):
-            self.logger.info("Проверка заголовка карточки авторизации")
-            self.wait_element(browser, target_locator=self.CARD_HEADER, method=By.CSS_SELECTOR)
-
-        self.logger.info("Все элементы на странице администрирования присутствуют")
 
     @allure.step("Выход из административной панели")
     def logout(self, browser):

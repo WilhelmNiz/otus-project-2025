@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from frontend.page_object.base_test import BasePage
+from frontend.page_object.base_page import BasePage
 
 
 class HeaderElements(BasePage):
@@ -15,20 +15,16 @@ class HeaderElements(BasePage):
     LOGO = "//img[contains(@title, 'Your Store')]"
     SEARCH_INPUT = "#search input[name='search']"
     SEARCH_BUTTON = "#search button"
-    CART_ITEMS_LIST = "//h1[contains(text(), 'Shopping Cart')]/following::table//tbody/tr"
-    WISH_LIST_ITEM = "//h1[contains(text(), 'My Wishlist')]/following::table//tbody/tr"
     DROPDOWN_CURRENCY = "#form-currency > div > a > span"
     LIST_CURRENCY = "#form-currency > div > ul > li"
     CURRENT_CURRENCY = "#form-currency > div > a > strong"
     MY_ACCOUNT_DROPDOWN = "//span[contains(text(), 'My Account')]"
     LOGIN_LINK = "//a[contains(text(), 'Login')]"
-    CONTENT = "#content"
     BUTTON_CART = "//span[contains(text(), 'Shopping Cart')]"
     BUTTON_WISH_LIST = "//span[contains(text(), 'Wish List')]"
     ALERT_SUCCESS = "//div[contains(@class, 'alert-success')]"
     BUTTON_CLOSE_ALERT = "//button[contains(@class, 'btn-close')] "
     PRODUCT_SHOW_ALL = "//div[contains(@class, 'dropdown-menu show')]//a[contains(text(), 'Show All')]"
-    NARBAR_MENU = "//nav[contains(@id, 'menu')]"
 
     @allure.step("Изменение валюты на сайте")
     def change_currency(self, browser, new_currency=None):

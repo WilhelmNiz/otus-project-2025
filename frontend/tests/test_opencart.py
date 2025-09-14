@@ -3,6 +3,8 @@ import pytest
 from frontend.page_object.catalog_page import CatalogPage
 from frontend.page_object.admin_page import AdminPage
 from frontend.page_object.account_login_page import AccountLoginPage
+from frontend.page_object.listpage import ListPage
+from frontend.page_object.main_page import MainPage
 
 
 @pytest.mark.frontend
@@ -30,17 +32,19 @@ def test_add_random_product_to_cart(browser):
     """Тест добавления товара в корзину"""
     with allure.step("Инициализация страницы каталога"):
         cp = CatalogPage()
+        lp = ListPage()
+        mp = MainPage()
 
     with allure.step("Переход на главную страницу"):
-        cp.header.click_logo(browser=browser)
+        cp.header.click_logo(browser)
         cp.header.set_page_zoom(browser)
 
     with allure.step("Добавление случайного товара в корзину"):
-        product_name = cp.add_product_to_list(browser=browser)
+        product_name = mp.add_product_to_list(browser, list_type="cart")
         allure.dynamic.title(f"Добавление товара '{product_name}' в корзину")
 
     with allure.step("Проверка наличия товара в корзине"):
-        cp.checking_product_in_list(browser=browser, product_name=product_name)
+        lp.checking_product_in_list(browser, product_name=product_name, list_type="cart")
 
 
 @pytest.mark.frontend
@@ -53,8 +57,6 @@ def test_select_currency_title(browser):
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser)
-
-    with allure.step("Установка оптимального масштаба страницы"):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Получение текущих цен товаров"):
@@ -76,8 +78,11 @@ def test_select_currency_title(browser):
     with allure.step("Корректировка масштаба после изменений"):
         cp.header.set_page_zoom(browser)
 
+    with allure.step("Получение новых цен после смены валюты"):
+        prices_after = cp.get_current_product_prices(browser)
+
     with allure.step("Верификация изменения цен"):
-        cp.verify_currency_changed(original_prices=prices_before, new_prices=new_currency)
+        cp.verify_currency_changed(original_prices=prices_before, new_prices=prices_after)
 
 
 @pytest.mark.frontend
@@ -110,18 +115,21 @@ def test_select_currency_catalog(browser):
     with allure.step("Корректировка отображения страницы"):
         cp.header.set_page_zoom(browser)
 
+    with allure.step("Получение новых цен после смены валюты"):
+        prices_after = cp.get_current_product_prices(browser)
+
     with allure.step("Проверка изменения цен в категории"):
-        cp.verify_currency_changed(original_prices=prices_before, new_prices=new_currency)
+        cp.verify_currency_changed(browser, original_prices=prices_before, new_prices=prices_after)
 
 
 @pytest.mark.frontend
 @pytest.mark.parametrize("user_data", [
-    {"firstname": "Test", "lastname": "User", "password": "test123", "role": "standard"},
-    {"firstname": "Admin", "lastname": "Test", "password": "admin123", "role": "admin"},
-    {"firstname": "John", "lastname": "Doe", "password": "customer1", "role": "customer"},
-    {"firstname": "Alice", "lastname": "Smith", "password": "alice123", "role": "premium"},
-    {"firstname": "Bob", "lastname": "Johnson", "password": "bob123!", "role": "vip"}
-], ids=["standard_user", "admin_user", "customer_user", "premium_user", "vip_user"])
+    {"firstname": "Test", "lastname": "User", "password": "test123"},
+    {"firstname": "Admin", "lastname": "Test", "password": "admin123"},
+    {"firstname": "John", "lastname": "Doe", "password": "customer1"},
+    {"firstname": "Alice", "lastname": "Smith", "password": "alice123"},
+    {"firstname": "Bob", "lastname": "Johnson", "password": "bob123!"}
+])
 @allure.feature("Администрирование OpenCart")
 @allure.story("Регистрация новых пользователей через админ панель")
 def test_opencart_add_user(browser, user_data):
@@ -129,7 +137,9 @@ def test_opencart_add_user(browser, user_data):
     firstname = user_data["firstname"]
     lastname = user_data["lastname"]
     password = user_data["password"]
-    ap = AdminPage()
+
+    with allure.step("Инициализация страницы администрирования"):
+        ap = AdminPage()
 
     with allure.step("Открытие админ-панели"):
         browser.open(ap.ADMIN_PAGE)
@@ -162,7 +172,8 @@ def test_opencart_add_user(browser, user_data):
 def test_opencart_add_and_delete_product(browser):
     """Тест по добавлению и удалению нового товара в разделе администратора"""
 
-    ap = AdminPage()
+    with allure.step("Инициализация страницы администрирования"):
+        ap = AdminPage()
 
     with allure.step("Открытие админ-панели"):
         browser.open(ap.ADMIN_PAGE)
@@ -170,7 +181,7 @@ def test_opencart_add_and_delete_product(browser):
     with allure.step("Авторизация администратора"):
         ap.authorization_admin(browser)
 
-    with allure.step(f"Добавление товара"):
+    with allure.step("Добавление товара"):
         value = ap.add_product(browser)
         allure.dynamic.title(f"Добавление товара '{value}'")
 
@@ -180,16 +191,20 @@ def test_opencart_add_and_delete_product(browser):
     with allure.step("Удаление товара"):
         ap.delete_product(browser)
 
+
 @pytest.mark.frontend
 @allure.feature("Управление товарами")
 @allure.story("Добавление товара в список желаний")
 def test_add_random_product_to_wish_list(browser):
     """Тест добавления в список желаний"""
-    ap = AdminPage()
-    cp = CatalogPage()
-    al = AccountLoginPage()
-
     password = 4444
+
+    with allure.step("Инициализация страниц"):
+        ap = AdminPage()
+        cp = CatalogPage()
+        al = AccountLoginPage()
+        lp = ListPage()
+        mp = MainPage()
 
     with allure.step("Открытие админ-панели"):
         browser.open(ap.ADMIN_PAGE)
@@ -197,7 +212,7 @@ def test_add_random_product_to_wish_list(browser):
     with allure.step("Авторизация администратора"):
         ap.authorization_admin(browser)
 
-    with allure.step(f"Добавление пользователя"):
+    with allure.step("Добавление пользователя"):
         added_firstname, added_lastname, email = ap.add_customers(
             browser,
             firstname="Test123",
@@ -211,23 +226,24 @@ def test_add_random_product_to_wish_list(browser):
             name="Данные добавленного пользователя",
             attachment_type=allure.attachment_type.TEXT
         )
+
     with allure.step("Открытие главной страницы"):
         browser.go_to_home()
 
     with allure.step("Переход на главную страницу"):
-        cp.header.click_logo(browser=browser)
+        cp.header.click_logo(browser)
         cp.header.set_page_zoom(browser)
 
     with allure.step("Авторизация пользователя на сайте"):
-        al.account_login(browser, email = email, password=password)
+        al.account_login(email=email, password=password)
 
     with allure.step("Переход на главную страницу"):
-        cp.header.click_logo(browser=browser)
+        cp.header.click_logo(browser)
         cp.header.set_page_zoom(browser)
 
     with allure.step("Добавление случайного товара в список желаний"):
-        product_name = cp.add_product_to_list(browser=browser, list_type="wishlist")
+        product_name = mp.add_product_to_list(browser, list_type="wishlist")
         allure.dynamic.title(f"Добавление товара '{product_name}' в список желаний")
 
     with allure.step("Проверка наличия товара в список желаний"):
-        cp.checking_product_in_list(browser=browser, product_name=product_name, list_type="wishlist")
+        lp.checking_product_in_list(browser, product_name=product_name, list_type="wishlist")

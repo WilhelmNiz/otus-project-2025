@@ -1,24 +1,18 @@
 import random
 
 import allure
-from frontend.page_object.base_test import BasePage
 from selenium.webdriver.common.by import By
 
-from frontend.page_object.header_elements import HeaderElements
+from frontend.page_object.base_page_with_header import BasePageWithHeader
 
 
-class MainPage(BasePage):
+class MainPage(BasePageWithHeader):
     """Главная страница OpenCart"""
     CAROUSEL_BANNER = "#carousel-banner-0"
     ALL_PRODUCT_NAME = ".product-thumb"
     TITLE_PRODUCT_NAME = "h4 a"
     BUTTON_ADD_TO_CART = "button[formaction*='cart.add']"
     BUTTON_ADD_TO_WISH_LIST = "button[formaction*='wishlist.add']"
-    FIRST_PRODUCT = ".product-thumb:first-child"
-
-    def __init__(self):
-        super().__init__()
-        self.header = HeaderElements()
 
     @allure.step("Добавление случайного товара в список")
     def add_product_to_list(self, browser, list_type="cart"):
@@ -81,80 +75,3 @@ class MainPage(BasePage):
 
             self.logger.info(f"Товар '{product_name}' успешно добавлен в {list_name}")
             return product_name
-
-    @allure.step("Проверка наличия товара в списке")
-    def checking_product_in_list(self, browser, product_name, list_type="cart"):
-        """
-        Универсальный метод проверки товара в списке (cart или wishlist)
-
-        :param browser: экземпляр браузера
-        :param product_name: название товара для проверки
-        :param list_type: тип списка - "cart" или "wishlist"
-        """
-        list_name = "корзину" if list_type == "cart" else "список желаний"
-        self.logger.info(f"Проверка наличия товара '{product_name}' в {list_name}")
-
-        items_locator = self.header.CART_ITEMS_LIST if list_type == "cart" else self.header.WISH_LIST_ITEM
-        success_action = self.header.BUTTON_CART if list_type == "cart" else self.header.BUTTON_WISH_LIST
-
-        with allure.step(f"1. Перейти в {list_name}"):
-            self.logger.info(f"Переход в {list_name}")
-            self.wait_and_click(browser=browser, target_locator=success_action)
-
-        with allure.step(f"2. Проверить что список не пуст (ожидаемый товар: '{product_name}')"):
-            self.logger.info(f"Проверка что список не пуст")
-            items_in_list = self.wait_elements(browser, target_locator=items_locator)
-            self.logger.info(f"Количество товаров в списке: {len(items_in_list)}")
-            allure.attach(
-                str(len(items_in_list)),
-                name=f"Количество товаров в списке",
-                attachment_type=allure.attachment_type.TEXT
-            )
-            assert len(items_in_list) > 0, f"В {list_name.capitalize()} нет товаров"
-
-        with allure.step("3. Поиск товара в списке"):
-            self.logger.info(f"Поиск товара '{product_name}' в {list_name}")
-            found = False
-            for item in items_in_list:
-                if product_name in item.text:
-                    found = True
-                    self.logger.info(f"Товар найден: {item.text}")
-                    allure.attach(
-                        item.text,
-                        name="Найденный товар",
-                        attachment_type=allure.attachment_type.TEXT
-                    )
-                    break
-
-        with allure.step(f"4. Проверить что товар '{product_name}' присутствует в {list_name}"):
-            self.logger.info(f"Проверка наличия товара в {list_name}")
-            assert found, f"Товар '{product_name}' не найден в {list_name}"
-            self.logger.info(f"Товар '{product_name}' успешно найден в {list_name}")
-
-
-    @allure.step("Проверка элементов на главной странице")
-    def check_elements_main_page(self, browser):
-        """Проверка элементов на главной странице"""
-        self.logger.info("Проверка элементов на главной странице")
-
-        with allure.step("Проверить наличие логотипа"):
-            self.logger.info("Проверка логотипа")
-            self.wait_element(browser, target_locator=self.header.LOGO)
-
-        with allure.step("Проверить поле поиска"):
-            self.logger.info("Проверка поля поиска")
-            self.wait_element(browser, target_locator=self.header.SEARCH_INPUT, method=By.CSS_SELECTOR)
-
-        with allure.step("Проверить корзину"):
-            self.logger.info("Проверка корзины")
-            self.wait_element(browser, target_locator=self.header.BUTTON_CART, method=By.CSS_SELECTOR)
-
-        with allure.step("Проверить карусель баннеров"):
-            self.logger.info("Проверка карусели баннеров")
-            self.wait_element(browser, target_locator=self.CAROUSEL_BANNER, method=By.CSS_SELECTOR)
-
-        with allure.step("Проверить навигационное меню"):
-            self.logger.info("Проверка навигационного меню")
-            self.wait_element(browser, target_locator=self.header.NARBAR_MENU)
-
-        self.logger.info("Все элементы на главной странице присутствуют")
