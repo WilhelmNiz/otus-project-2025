@@ -98,28 +98,30 @@ def test_select_currency_catalog(browser):
 
     with allure.step("Получение цен товаров в выбранной категории"):
         prices_before = cp.get_current_product_prices(browser)
+        prices_before = str(prices_before)
         allure.attach(
-            str(prices_before),
+            prices_before,
             name=f"Цены до смены валюты",
             attachment_type=allure.attachment_type.TEXT
         )
 
     with allure.step("Смена валюты"):
-        new_currency = cp.header.change_currency(browser)
-        allure.attach(
-            new_currency,
-            name="Новая валюта",
-            attachment_type=allure.attachment_type.TEXT
-        )
+        cp.header.change_currency(browser)
 
     with allure.step("Корректировка отображения страницы"):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Получение новых цен после смены валюты"):
         prices_after = cp.get_current_product_prices(browser)
+        prices_after  = str(prices_after )
+        allure.attach(
+            prices_after,
+            name=f"Цены помле смены валюты",
+            attachment_type=allure.attachment_type.TEXT
+        )
 
     with allure.step("Проверка изменения цен в категории"):
-        cp.verify_currency_changed(browser, original_prices=prices_before, new_prices=prices_after)
+        cp.verify_currency_changed(original_prices=prices_before, new_prices=prices_after)
 
 
 @pytest.mark.frontend
@@ -165,6 +167,8 @@ def test_opencart_add_user(browser, user_data):
     with allure.step("Верификация данных пользователя в системе"):
         ap.verifying_user_data(browser, firstname=added_firstname, lastname=added_lastname, email=email)
 
+    with allure.step("Удаление созданного пользователя"):
+        ap.delete_entity(browser, entity_type="Пользователь")
 
 @pytest.mark.frontend
 @allure.feature("Управление товарами")
@@ -189,7 +193,7 @@ def test_opencart_add_and_delete_product(browser):
         ap.verifying_product_data(browser, value=value)
 
     with allure.step("Удаление товара"):
-        ap.delete_product(browser)
+        ap.delete_entity(browser)
 
 
 @pytest.mark.frontend
@@ -235,7 +239,7 @@ def test_add_random_product_to_wish_list(browser):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Авторизация пользователя на сайте"):
-        al.account_login(email=email, password=password)
+        al.account_login(browser, email=email, password=password)
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser)

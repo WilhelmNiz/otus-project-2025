@@ -1,3 +1,4 @@
+import time
 import uuid
 import allure
 
@@ -10,107 +11,41 @@ from frontend.page_object.base_page_with_header import BasePageWithHeader
 
 
 class AdminPage(BasePageWithHeader):
-    # Админка
     ADMIN_PAGE = "/administration"
     ADMIN_LOGIN_CARD = ".card"
     INPUT_USERNAME = "//input[contains(@name, 'username')]"
-
-    # Кнопка авторизации
     BUTTON_LOGIN = "//button[contains(text(), 'Login')]"
-
     CARD_HEADER = "#content > div > div > div > div > div.card-header"
     BUTTON_LOGOUT = "#nav-logout > a"
-
-    # Строка с дропдоуном пользователей
     DROPDOWN_CUSTOMERS = "//i[contains (@class, 'fas fa-user')]"
-
-    # Кнопка для перехода в меню редакторования пользователей
     BUTTON_CUSTOMERS = "(//a[contains(text(), 'Customers')])[2]"
-
-    # Инпут "Имя"
     INPUT_FIRSTNAME = "//input[contains(@name, 'firstname')]"
-
-    # Инпут "фамилия"
     INPUT_LASTNAME = "//input[contains(@name, 'lastname')]"
-
-    # Инпут "E-Mail"
     INPUT_E_MAIL = "//input[contains(@name, 'email')]"
-
-    # Инпут "Пароль"
     INPUT_PASSWORD = "//input[contains(@name, 'password')]"
-
-    # Инпут "Подтверждение пароля"
     INPUT_CONFIRM = "//input[contains(@name, 'confirm')]"
-
-    # Кнопка "Сохранить"
     BUTTON_SAVE = "//button[contains(@title, 'Save')]"
-
-    # Инпут Customer Name в фильтрах
     INPUT_CUSTOMER_NAME_FILTER = "//input[contains(@placeholder, 'Customer Name')]"
-
-    # Инпут email в фильтрах
     INPUT_EMAIL_FILTER = "// input[contains( @ placeholder, 'E-Mail')]"
-
-    # Инпут Customer Name
     BUTTON_FILTER = "// button[contains( @ id, 'button-filter')]"
-
-    # Имя пользователя
     CUSTOMER_NAME = "(//td[@class='text-start'])[4]"
-
-    # Имя пользователя
-    CUSTOMER_EMAIL = "(//td[@class='text-start'])[5]"
-
-    # КАТАЛОГ(ТОВАРЫ)
-    # Строка с дропдоуном "Каталог"
     DROPDOWN_CATALOG = "//i[contains (@class, 'fa-solid fa-tag')]"
-
-    # Кнопка для перехода в меню редактирования товаров
     BUTTON_PRODUCT = "//a[contains (text(), 'Products')]"
-
-    # Инпут имя продукта
     INPUT_PRODUCT_NAME = "//input[contains(@placeholder, 'Product Name')]"
-
-    # Инпут Meta Tag Title
     INPUT_META_TAG_TITLE = "//input[contains(@placeholder, 'Meta Tag Title')]"
-
-    # Раздел "Данные"
     SECTION_DATA = "//a[contains(text(), 'Data')]"
-
-    # Раздел "SEO"
     SECTION_SEO = "(//a[contains(text(), 'SEO')])[2]"
-
-    # Инпут "Ключевое слово"
     INPUT_KEYWORD = "//input[contains(@name, 'seo')]"
-
-    # Инпут модель товара
     INPUT_MODEL = "//input[contains(@placeholder, 'Model')]"
-
-    # Инпут Product Name в фильтрах
     INPUT_PRODUCT_NAME_FILTER = "//input[contains(@placeholder, 'Product Name')]"
-
-    # Инпут Model в фильтрах
+    CUSTOMER_EMAIL = "(//td[@class='text-start'])[5]"
     INPUT_MODEL_FILTER = "//input[contains(@placeholder, 'Model')]"
-
-    # Имя товара
     PRODUCT_NAME = "(//td[@class='text-start'])[2]"
-
-    # модель товара
     PRODUCT_MODEL = "(//td[@class='text-start d-none d-lg-table-cell'])[2]"
-
-    # ОБЩЕЕ
-    # Кнопка добавления
     BUTTON_ADD_NEW = "//a[contains(@title, 'Add New')]"
-
-    # Чексбокс для выбора всех элементов в списке
     CHECKBOX = "//input[@type='checkbox']"
-
-    # Кнопка "Назад"
     BUTTON_BACK = "//a[contains(@title, 'Back')]"
-
-    # Кнопка "Удалить"
-    BUTTON_DELETE = "//button[contains(@title, 'Delete')]"
-
-    # Пустой список элементов
+    BUTTON_DELETE = "//button[contains(@class, 'btn btn-danger')]"
     CLEAR_LIST = "//td[contains (text(), 'No results!')]"
 
     @allure.step("Авторизация в админ-панели")
@@ -163,6 +98,7 @@ class AdminPage(BasePageWithHeader):
             self.wait_and_click(browser=browser, target_locator=self.BUTTON_CUSTOMERS)
             self.wait_and_click(browser=browser, target_locator=self.BUTTON_ADD_NEW)
 
+
         with allure.step("2. Проверить переход на страницу клиентов"):
             self.logger.info("Проверка перехода на страницу клиентов")
             assert "Customers" in browser.title, "Не удалось войти в меню редактирования пользователей"
@@ -190,6 +126,7 @@ class AdminPage(BasePageWithHeader):
             self.logger.info("Сохранение клиента")
             self.wait_and_click(browser=browser, target_locator=self.BUTTON_SAVE)
             self.wait_element(browser=browser, target_locator=self.header.ALERT_SUCCESS)
+            self.wait_and_click(browser=browser, target_locator=self.header.BUTTON_CLOSE_ALERT)
 
         with allure.step("5. Вернуться к списку клиентов"):
             self.logger.info("Возврат к списку клиентов")
@@ -209,12 +146,12 @@ class AdminPage(BasePageWithHeader):
             self.data_entry(browser=browser, target=self.INPUT_CUSTOMER_NAME_FILTER, value=full_name)
             self.data_entry(browser=browser, target=self.INPUT_EMAIL_FILTER, value=email)
             self.wait_and_click(browser=browser, target_locator=self.BUTTON_FILTER)
-
             allure.attach(
                 f"Фильтр по имени: {full_name}\nФильтр по email: {email}",
                 name="Параметры поиска",
                 attachment_type=allure.attachment_type.TEXT
             )
+            time.sleep(2)
 
         with allure.step("2. Получить данные найденного пользователя"):
             self.logger.info("Получение данных найденного пользователя")
@@ -352,13 +289,18 @@ class AdminPage(BasePageWithHeader):
                 attachment_type=allure.attachment_type.TEXT
             )
 
-    @allure.step("Удаление товара из системы")
-    def delete_product(self, browser):
-        """Удаление товара с подтверждением операции"""
-        self.logger.info("Начало удаления товара")
+    @allure.step("Удаление сущности из админ панели")
+    def delete_entity(self, browser, entity_type="товар"):
+        """
+        Универсальное удаление сущности (товара или пользователя) с подтверждением операции
 
-        with allure.step("1. Выбрать товар для удаления"):
-            self.logger.info("Выбор товара для удаления")
+        :param browser: экземпляр браузера
+        :param entity_type: тип сущности ("товар" или "пользователь")
+        """
+        self.logger.info(f"Начало удаления {entity_type}")
+
+        with allure.step(f"1. Выбрать {entity_type} для удаления"):
+            self.logger.info(f"Выбрать {entity_type} для удаления")
             self.wait_and_click(browser=browser, target_locator=self.CHECKBOX)
 
         with allure.step("2. Нажать кнопку удаления"):
@@ -369,22 +311,12 @@ class AdminPage(BasePageWithHeader):
             self.logger.info("Подтверждение удаления")
             alert = Alert(browser)
             alert.accept()
-            allure.attach(
-                "Удаление подтверждено",
-                name="Подтверждение",
-                attachment_type=allure.attachment_type.TEXT
-            )
 
-        with allure.step("4. Проверить очистку списка товаров"):
-            self.logger.info("Проверка очистки списка товаров")
+        with allure.step(f"4. Проверить очистку списка"):
+            self.logger.info(f"Проверка очистки списка")
             self.search_element(browser, element=self.CLEAR_LIST)
-            allure.attach(
-                "Список товаров очищен",
-                name="Результат удаления",
-                attachment_type=allure.attachment_type.TEXT
-            )
 
-        self.logger.info("Товар успешно удален")
+        self.logger.info(f"{entity_type.capitalize()} успешно удален")
 
     @allure.step("Выход из административной панели")
     def logout(self, browser):
