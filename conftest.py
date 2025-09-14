@@ -16,7 +16,6 @@ def pytest_addoption(parser):
     parser.addoption("--remote", action="store_true", help="Use remote Selenoid driver")
     parser.addoption("--remote_url", help="Selenoid hub URL", default="http://localhost:4444/wd/hub")
     parser.addoption("--enable_vnc", action="store_true", help="Enable VNC for remote sessions")
-    parser.addoption("--enable_video", action="store_true", help="Enable video recording for remote sessions")
     parser.addoption("--browser_version", help="Browser version for remote sessions", default="128.0")
 
 
@@ -28,16 +27,14 @@ def browser(request):
     is_remote = request.config.getoption("--remote")
     remote_url = request.config.getoption("--remote_url")
     enable_vnc = request.config.getoption("--enable_vnc")
-    enable_video = request.config.getoption("--enable_video")
-    browser_version = request.config.getoption("--browser_version")
+    browser_version = request.config.getoption("--browser_version")  # Получаем версию браузера
 
     if is_remote:
         # Настройка для Selenoid
         capabilities = {
             "browserName": "chrome" if browser_name in ["ch", "chrome"] else "firefox",
-            "version": browser_version,
+            "version": browser_version,  # Используем указанную версию или 128.0 по умолчанию
             "enableVNC": enable_vnc,
-            "enableVideo": enable_video,
         }
 
         if browser_name in ["ch", "chrome"]:
@@ -80,41 +77,7 @@ def browser(request):
                 options.add_argument("--headless")
             driver = webdriver.Firefox(options=options)
 
-    # Сохраняем параметры для использования в хуке
-    driver._test_params = {
-        'is_remote': is_remote,
-        'remote_url': remote_url,
-        'enable_video': enable_video
-    }
-
-    def finalizer():
-        # Прикрепляем видео в конце теста, если включена запись
-        if (hasattr(driver, '_test_params') and
-                driver._test_params['is_remote'] and
-                driver._test_params['enable_video']):
-
-            try:
-                session_id = driver.session_id
-                remote_url = driver._test_params['remote_url']
-
-                if remote_url and session_id:
-                    video_url = f"{remote_url.replace('/wd/hub', '')}/video/{session_id}.mp4"
-
-                    # Добавляем ссылку на видео в отчет Allure
-                    allure.attach(
-                        f'<video src="{video_url}" controls width="800" style="border: 1px solid #ccc; margin: 10px 0;">'
-                        'Your browser does not support the video tag.'
-                        '</video>',
-                        name="test_video",
-                        attachment_type=allure.attachment_type.HTML
-                    )
-                    print(f"Видео теста доступно по ссылке: {video_url}")
-            except Exception as e:
-                print(f"Не удалось прикрепить видео: {e}")
-
-        driver.quit()
-
-    request.addfinalizer(finalizer)
+    request.addfinalizer(driver.quit)
 
     def open(path=""):
         return driver.get(url + path.lstrip('/'))
@@ -132,6 +95,7 @@ def browser(request):
         driver.set_window_size(1920, 1080)
 
     driver.implicitly_wait(5)
+
     driver.go_to_home()
 
     return driver

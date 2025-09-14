@@ -10,7 +10,6 @@ pipeline {
         booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Запуск в headless-режиме')
         booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid')
         booleanParam(name: 'ENABLE_VNC', defaultValue: false, description: 'Включить VNC')
-        booleanParam(name: 'ENABLE_VIDEO', defaultValue: false, description: 'Включить запись видео')
         choice(name: 'TEST_MARK', choices: ['all', 'booking', 'auth', 'backend', 'frontend'], description: 'Марка тестов для запуска')
     }
 
@@ -78,9 +77,6 @@ pipeline {
                     }
                     if (params.ENABLE_VNC.toBoolean()) {
                         pytestCmd += " --enable_vnc"
-                    }
-                    if (params.ENABLE_VIDEO.toBoolean()) {
-                        pytestCmd += " --enable_video"
                     }
 
                     pytestCmd += " --alluredir=${env.WORKSPACE}/allure-results"
