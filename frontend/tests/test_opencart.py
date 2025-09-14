@@ -133,9 +133,7 @@ def test_opencart_add_user(browser, user_data):
     firstname = user_data["firstname"]
     lastname = user_data["lastname"]
     password = user_data["password"]
-
-    with allure.step("Инициализация страницы администрирования"):
-        ap = AdminPage()
+    ap = AdminPage()
 
     with allure.step("Открытие админ-панели"):
         browser.open(ap.ADMIN_PAGE)
@@ -168,8 +166,7 @@ def test_opencart_add_user(browser, user_data):
 def test_opencart_add_and_delete_product(browser):
     """Тест по добавлению и удалению нового товара в разделе администратора"""
 
-    with allure.step("Инициализация страницы администрирования"):
-        ap = AdminPage()
+    ap = AdminPage()
 
     with allure.step("Открытие админ-панели"):
         browser.open(ap.ADMIN_PAGE)
@@ -192,34 +189,32 @@ def test_opencart_add_and_delete_product(browser):
 @allure.story("Добавление товара в список желаний")
 def test_add_random_product_to_wish_list(browser):
     """Тест добавления в список желаний"""
-    # with allure.step("Инициализация страницы администрирования"):
-    #     ap = AdminPage()
-    #     password = 4444
-    #
-    # with allure.step("Открытие админ-панели"):
-    #     browser.open(ap.ADMIN_PAGE)
-    #
-    # with allure.step("Авторизация администратора"):
-    #     ap.authorization_admin(browser)
-    #
-    # with allure.step(f"Добавление пользователя"):
-    #     added_firstname, added_lastname, email = ap.add_customers(
-    #         browser,
-    #         firstname="Test123",
-    #         lastname="Test123",
-    #         password=password
-    #     )
-    #     allure.dynamic.title(f"Добавление пользователя")
-    #
-    #     allure.attach(
-    #         f"Имя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
-    #         name="Данные добавленного пользователя",
-    #         attachment_type=allure.attachment_type.TEXT
-    #     )
-    email = "wilhelmkindly@gmail.com"
-    password = "4444"
-    with allure.step("Инициализация страницы каталога"):
-        cp = CatalogPage()
+    ap = AdminPage()
+    cp = CatalogPage()
+    password = 4444
+
+    with allure.step("Открытие админ-панели"):
+        browser.open(ap.ADMIN_PAGE)
+
+    with allure.step("Авторизация администратора"):
+        ap.authorization_admin(browser)
+
+    with allure.step(f"Добавление пользователя"):
+        added_firstname, added_lastname, email = ap.add_customers(
+            browser,
+            firstname="Test123",
+            lastname="Test123",
+            password=password
+        )
+        allure.dynamic.title(f"Добавление пользователя")
+
+        allure.attach(
+            f"Имя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
+            name="Данные добавленного пользователя",
+            attachment_type=allure.attachment_type.TEXT
+        )
+    with allure.step("Открытие главной страницы"):
+        browser.go_to_home()
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser=browser)

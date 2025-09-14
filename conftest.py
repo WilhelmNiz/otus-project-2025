@@ -85,6 +85,12 @@ def browser(request):
     def open(path=""):
         return driver.get(url + path.lstrip('/'))
 
+    def go_to_home():
+        return driver.get(url)
+
+    driver.open = open
+    driver.go_to_home = go_to_home
+
     try:
         driver.maximize_window()
     except Exception as e:
@@ -93,8 +99,7 @@ def browser(request):
 
     driver.implicitly_wait(5)
 
-    driver.open = open
-    driver.open()
+    driver.go_to_home()
 
     return driver
 
