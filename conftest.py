@@ -1,6 +1,6 @@
 import pytest
 import allure
-import random
+import tempfile
 import requests
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
@@ -69,7 +69,10 @@ def browser(request):
                 options.add_argument("headless=new")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
-            driver = webdriver.Chrome(options=options)
+            with tempfile.TemporaryDirectory() as user_data_dir:
+                options.add_argument(f"--user-data-dir={user_data_dir}")
+                driver = webdriver.Chrome(options=options)
+
         elif browser_name in ["ff", "firefox"]:
             options = FFoptions()
             if headless:
