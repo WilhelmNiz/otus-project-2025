@@ -140,7 +140,6 @@ def pytest_runtest_makereport(item):
             except Exception as e:
                 print(f"Не удалось сделать скриншот: {e}")
 
-
 @pytest.fixture(scope="session")
 def base_url():
     return "https://restful-booker.herokuapp.com"
