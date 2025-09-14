@@ -1,4 +1,3 @@
-import time
 import uuid
 import allure
 
@@ -151,7 +150,6 @@ class AdminPage(BasePageWithHeader):
                 name="Параметры поиска",
                 attachment_type=allure.attachment_type.TEXT
             )
-            time.sleep(2)
 
         with allure.step("2. Получить данные найденного пользователя"):
             self.logger.info("Получение данных найденного пользователя")
