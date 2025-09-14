@@ -69,6 +69,7 @@ def browser(request):
                 options.add_argument("headless=new")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
+            options.add_argument(f"--user-data-dir=/tmp/chrome_{random.randint(1, 10000)}")
             driver = webdriver.Chrome(options=options)
         elif browser_name in ["ff", "firefox"]:
             options = FFoptions()
