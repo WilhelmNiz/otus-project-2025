@@ -23,7 +23,7 @@ def test_admin_login_logout(browser):
 
 
 @pytest.mark.frontend
-@allure.feature("Корзина товаров")
+@allure.feature("Управление товарами")
 @allure.story("Добавление товара в корзину")
 def test_add_random_product_to_cart(browser):
     """Тест добавления товара в корзину"""
@@ -123,7 +123,6 @@ def test_select_currency_catalog(browser):
 ], ids=["standard_user", "admin_user", "customer_user", "premium_user", "vip_user"])
 @allure.feature("Управление пользователями")
 @allure.story("Регистрация новых пользователей с различными ролями")
-@allure.severity(allure.severity_level.CRITICAL)
 def test_opencart_add_user(browser, user_data):
     """Тест регистрации нового пользователя в магазине opencart"""
     firstname = user_data["firstname"]
@@ -181,7 +180,7 @@ def test_opencart_add_and_delete_product(browser):
         ap.delete_product(browser)
 
 @pytest.mark.frontend
-@allure.feature("Список желаний")
+@allure.feature("Управление товарами")
 @allure.story("Добавление товара в список желаний")
 def test_add_random_product_to_wish_list(browser):
     """Тест добавления в список желаний"""
