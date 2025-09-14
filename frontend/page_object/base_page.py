@@ -85,17 +85,6 @@ class BasePage:
             raise
 
 
-    def search_element(self, browser, element, method=By.XPATH):
-        self.logger.info(f"Поиск элемента: {element} (метод: {method})")
-        try:
-            found_element = browser.find_element(method, element).text
-            self.logger.info(f"Элемент {element} успешно найден")
-            return found_element
-        except Exception as e:
-            self.logger.error(f"Ошибка при поиске элемента {element}: {str(e)}")
-            raise
-
-
     def wait_elements(self, browser, target_locator, method=By.XPATH, timeout=10):
         """
         Ожидает появление элементов и возвращает список

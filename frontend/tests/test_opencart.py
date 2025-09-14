@@ -69,6 +69,7 @@ def test_select_currency_title(browser):
 
     with allure.step("Смена валюты"):
         new_currency = cp.header.change_currency(browser)
+        new_currency = str(new_currency)
         allure.attach(
             new_currency,
             name="Выбранная валюта",
@@ -80,9 +81,14 @@ def test_select_currency_title(browser):
 
     with allure.step("Получение новых цен после смены валюты"):
         prices_after = cp.get_current_product_prices(browser)
-
+        allure.attach(
+            str(prices_after),
+            name=f"Цены помле смены валюты",
+            attachment_type=allure.attachment_type.TEXT
+        )
     with allure.step("Верификация изменения цен"):
-        cp.verify_currency_changed(original_prices=prices_before, new_prices=prices_after)
+        cp.verify_currency_changed(original_prices=prices_before, new_prices=prices_after,
+                                   currency_name=new_currency)
 
 
 @pytest.mark.frontend
@@ -98,30 +104,35 @@ def test_select_currency_catalog(browser):
 
     with allure.step("Получение цен товаров в выбранной категории"):
         prices_before = cp.get_current_product_prices(browser)
-        prices_before = str(prices_before)
         allure.attach(
-            prices_before,
+            str(prices_before),
             name=f"Цены до смены валюты",
             attachment_type=allure.attachment_type.TEXT
         )
 
     with allure.step("Смена валюты"):
-        cp.header.change_currency(browser)
+        new_currency = cp.header.change_currency(browser)
+        new_currency = str(new_currency)
+        allure.attach(
+            new_currency,
+            name="Выбранная валюта",
+            attachment_type=allure.attachment_type.TEXT
+        )
 
     with allure.step("Корректировка отображения страницы"):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Получение новых цен после смены валюты"):
         prices_after = cp.get_current_product_prices(browser)
-        prices_after  = str(prices_after )
         allure.attach(
-            prices_after,
+            str(prices_after),
             name=f"Цены помле смены валюты",
             attachment_type=allure.attachment_type.TEXT
         )
 
     with allure.step("Проверка изменения цен в категории"):
-        cp.verify_currency_changed(original_prices=prices_before, new_prices=prices_after)
+        cp.verify_currency_changed(original_prices=prices_before, new_prices=prices_after,
+                                   currency_name=new_currency)
 
 
 @pytest.mark.frontend
@@ -134,8 +145,8 @@ def test_select_currency_catalog(browser):
 ])
 @allure.feature("Администрирование OpenCart")
 @allure.story("Регистрация новых пользователей через админ панель")
-def test_opencart_add_user(browser, user_data):
-    """Тест регистрации нового пользователя в магазине opencart"""
+def test_opencart_add_and_delete_user(browser, user_data):
+    """Тест регистрации и удаления нового пользователя в админ панели"""
     firstname = user_data["firstname"]
     lastname = user_data["lastname"]
     password = user_data["password"]

@@ -13,8 +13,6 @@ class HeaderElements(BasePage):
 
     NARBAR_MENU_DROPDOWN = "//li[contains(@class, 'nav-item dropdown')]"
     LOGO = "//img[contains(@title, 'Your Store')]"
-    SEARCH_INPUT = "#search input[name='search']"
-    SEARCH_BUTTON = "#search button"
     DROPDOWN_CURRENCY = "#form-currency > div > a > span"
     LIST_CURRENCY = "#form-currency > div > ul > li"
     CURRENT_CURRENCY = "#form-currency > div > a > strong"

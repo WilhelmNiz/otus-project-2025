@@ -14,7 +14,6 @@ class AdminPage(BasePageWithHeader):
     ADMIN_LOGIN_CARD = ".card"
     INPUT_USERNAME = "//input[contains(@name, 'username')]"
     BUTTON_LOGIN = "//button[contains(text(), 'Login')]"
-    CARD_HEADER = "#content > div > div > div > div > div.card-header"
     BUTTON_LOGOUT = "#nav-logout > a"
     DROPDOWN_CUSTOMERS = "//i[contains (@class, 'fas fa-user')]"
     BUTTON_CUSTOMERS = "(//a[contains(text(), 'Customers')])[2]"
@@ -153,9 +152,9 @@ class AdminPage(BasePageWithHeader):
 
         with allure.step("2. Получить данные найденного пользователя"):
             self.logger.info("Получение данных найденного пользователя")
-            name = self.search_element(browser, element=self.CUSTOMER_NAME)
+            name = self.wait_element(browser, target_locator=self.CUSTOMER_NAME)
             clean_name = name.replace("Enabled", "").strip()
-            mail = self.search_element(browser, element=self.CUSTOMER_EMAIL)
+            mail = self.wait_element(browser, target_locator=self.CUSTOMER_EMAIL)
 
             allure.attach(
                 f"Найденное имя: {clean_name}\nНайденный email: {mail}",
@@ -295,10 +294,10 @@ class AdminPage(BasePageWithHeader):
         :param browser: экземпляр браузера
         :param entity_type: тип сущности ("товар" или "пользователь")
         """
-        self.logger.info(f"Начало удаления {entity_type}")
+        self.logger.info(f"Начало удаления '{entity_type}'")
 
-        with allure.step(f"1. Выбрать {entity_type} для удаления"):
-            self.logger.info(f"Выбрать {entity_type} для удаления")
+        with allure.step(f"1. Выбрать сущность для удаления"):
+            self.logger.info(f"Выбрать сущность для удаления")
             self.wait_and_click(browser=browser, target_locator=self.CHECKBOX)
 
         with allure.step("2. Нажать кнопку удаления"):
@@ -312,7 +311,7 @@ class AdminPage(BasePageWithHeader):
 
         with allure.step(f"4. Проверить очистку списка"):
             self.logger.info(f"Проверка очистки списка")
-            self.search_element(browser, element=self.CLEAR_LIST)
+            self.wait_element(browser, target_locator=self.CLEAR_LIST)
 
         self.logger.info(f"{entity_type.capitalize()} успешно удален")
 

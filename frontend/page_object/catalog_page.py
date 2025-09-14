@@ -73,13 +73,30 @@ class CatalogPage(BasePageWithHeader):
             return prices_list
 
     @allure.step("Проверка изменения цен после смены валюты")
-    def verify_currency_changed(self, original_prices, new_prices):
+    def verify_currency_changed(self, original_prices, new_prices, currency_name=None):
         """
-        Проверяет, что цены изменились после смены валюты.
+        Проверяет, что цены изменились после смены валюты и содержат правильный символ.
+
+        :param original_prices: список цен до смены валюты
+        :param new_prices: список цен после смены валюты
+        :param currency_name: название валюты с символом (например, "£ Pound Sterling", "$ US Dollar")
         """
         self.logger.info("Проверка изменения цен после смены валюты")
         self.logger.info(f"Исходные цены: {original_prices}")
         self.logger.info(f"Новые цены: {new_prices}")
 
+        if currency_name:
+            self.logger.info(f"Проверяем валюту: {currency_name}")
+            currency_symbol = currency_name.split()[0] if currency_name else None
+            self.logger.info(f"Извлеченный символ валюты: {currency_symbol}")
+
         assert original_prices != new_prices, "Цены товаров не изменились после смены валюты"
+
+        if currency_name and currency_symbol:
+            with allure.step(f"Проверка наличия символа валюты '{currency_symbol}' в новых ценах"):
+                for price in new_prices:
+                    assert currency_symbol in price, \
+                        f"Цена '{price}' не содержит ожидаемый символ валюты '{currency_symbol}'"
+                self.logger.info(f"Все цены содержат символ валюты: {currency_symbol}")
+
         self.logger.info("Цены успешно изменились после смены валюты")
