@@ -1,6 +1,7 @@
 import pytest
 import allure
 import os
+import tempfile
 import requests
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
@@ -30,6 +31,7 @@ def browser(request):
     browser_version = request.config.getoption("--browser_version")  # Получаем версию браузера
 
     chrome_user_data_dir = None
+
     if is_remote:
         # Настройка для Selenoid
         capabilities = {
@@ -65,6 +67,7 @@ def browser(request):
     else:
         # Локальный запуск
         if browser_name in ["ch", "chrome"]:
+            chrome_user_data_dir = tempfile.mkdtemp(prefix="chrome-profile-")
             options = CHoptions()
             if headless:
                 options.add_argument("headless=new")
@@ -111,8 +114,6 @@ def browser(request):
                 print(f"Failed to clean up Chrome profile directory {chrome_user_data_dir}: {e}")
 
     request.addfinalizer(cleanup_profile)
-
-    return driver
 
     return driver
 
