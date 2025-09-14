@@ -5,20 +5,17 @@ pipeline {
         string(name: 'SELENOID_URL', defaultValue: 'http://ggr:4444/wd/hub', description: 'Адрес Selenoid хаба')
         string(name: 'OPENCART_URL', defaultValue: 'http://192.168.31.202:8081/', description: 'Адрес приложения OpenCart')
         choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Браузер для запуска тестов')
-        choice(name: 'BROWSER_VERSION', choices: ['128.0', '127.0'], description: 'Версия браузера')
+        choice(name: 'BROWSER_VERSION', choices: ['128.0', '127.0'], description: 'Версия браузера, передается только в случае REMOTE=true')
         string(name: 'THREADS', defaultValue: '1', description: 'Количество потоков (workers) для pytest')
         booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Запуск в headless-режиме')
+        booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid')
         booleanParam(name: 'ENABLE_VNC', defaultValue: false, description: 'Включить VNC')
         choice(name: 'TEST_MARK', choices: ['all', 'booking', 'auth', 'backend', 'frontend'], description: 'Марка тестов для запуска')
-
-
-        string(name: 'FORCE_REMOTE', defaultValue: 'true', description: 'Принудительный удаленный запуск')
     }
 
     environment {
         PYTHON_VERSION = '3'
-
-        REMOTE = 'true'
+        RUN_MODE = "${params.REMOTE.toBoolean() ? 'REMOTE SELENOID' : 'LOCAL'}"
     }
 
     stages {
@@ -49,6 +46,21 @@ pipeline {
             }
         }
 
+        stage('Remote Selenoid Configuration') {
+            when {
+                expression { params.REMOTE.toBoolean() }
+            }
+            steps {
+                script {
+                    echo "🚀 НАСТРОЙКА УДАЛЕННОГО ЗАПУСКА ЧЕРЕЗ SELENOID"
+                    echo "📍 Selenoid Hub: ${params.SELENOID_URL}"
+                    echo "🌐 Браузер: ${params.BROWSER} ${params.BROWSER_VERSION}"
+                    echo "📺 VNC: ${params.ENABLE_VNC ? 'ВКЛЮЧЕНО' : 'ВЫКЛЮЧЕНО'}"
+                    echo "🧵 Потоков: ${params.THREADS}"
+                }
+            }
+        }
+
         stage('Run Tests') {
             steps {
                 script {
@@ -57,7 +69,9 @@ pipeline {
 
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
 
-                    pytestCmd += " -n ${params.THREADS}"
+                    if (params.REMOTE.toBoolean()) {
+                        pytestCmd += " -n ${params.THREADS}"
+                    }
 
                     def marks = ""
                     if (params.TEST_MARK != 'all') {
@@ -70,24 +84,25 @@ pipeline {
 
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
-                    pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
+
+                    if (params.REMOTE.toBoolean()) {
+                        pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
+                    }
 
                     if (params.HEADLESS.toBoolean()) {
                         pytestCmd += " --headless"
                     }
-
-                    // Принудительно добавляем remote параметры
-                    pytestCmd += " --remote"
-                    pytestCmd += " --remote_url ${params.SELENOID_URL}"
-
+                    if (params.REMOTE.toBoolean()) {
+                        pytestCmd += " --remote"
+                        pytestCmd += " --remote_url ${params.SELENOID_URL}"
+                    }
                     if (params.ENABLE_VNC.toBoolean()) {
                         pytestCmd += " --enable_vnc"
                     }
 
                     pytestCmd += " --alluredir=${env.WORKSPACE}/allure-results"
 
-                    echo "Запускаем команду: ${pytestCmd}"
-                    echo "Режим: ПРИНУДИТЕЛЬНЫЙ УДАЛЕННЫЙ ЗАПУСК (Selenoid)"
+                    echo "🔧 Запускаем команду: ${pytestCmd}"
                     sh pytestCmd
                 }
             }
@@ -121,17 +136,20 @@ pipeline {
 
     post {
         always {
-            echo "Сборка завершена: ${currentBuild.result}"
-            echo "Режим запуска: Принудительный удаленный (Selenoid)"
+            echo "🏁 Сборка завершена: ${currentBuild.result}"
+            echo "📊 Режим запуска: ${env.RUN_MODE}"
         }
         success {
-            echo "Тесты прошли успешно! Отчет Allure доступен."
+            echo "✅ Тесты прошли успешно! Отчет Allure доступен."
+            echo "🌐 Запуск выполнен через: ${env.RUN_MODE}"
         }
         failure {
-            echo "В тестах найдены неудачи."
+            echo "❌ В тестах найдены неудачи."
+            echo "🌐 Режим запуска: ${env.RUN_MODE}"
         }
         unstable {
-            echo "Сборка помечена как нестабильная."
+            echo "⚠️ Сборка помечена как нестабильная."
+            echo "🌐 Режим запуска: ${env.RUN_MODE}"
         }
     }
 }
