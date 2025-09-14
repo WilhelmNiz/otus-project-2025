@@ -48,6 +48,9 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
+                    sh 'rm -rf /tmp/.com.google.Chrome.* || true'
+                    sh 'rm -rf /tmp/chrome_* || true'
+
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
 
                     pytestCmd += " -n ${params.THREADS}"
