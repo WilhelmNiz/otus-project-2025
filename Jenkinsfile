@@ -41,6 +41,7 @@ pipeline {
                      sh "python3 -m venv venv"
                      sh ". venv/bin/activate && pip install --upgrade pip"
                      sh ". venv/bin/activate && pip install -r requirements.txt"
+                     sh ". venv/bin/activate && pip install pytest-xdist"
                 }
             }
         }
@@ -49,6 +50,8 @@ pipeline {
             steps {
                 script {
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
+
+                    pytestCmd += " -n ${params.THREADS}"
 
                     def marks = ""
                     if (params.TEST_MARK != 'all') {
