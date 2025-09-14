@@ -153,8 +153,10 @@ class AdminPage(BasePageWithHeader):
         with allure.step("2. Получить данные найденного пользователя"):
             self.logger.info("Получение данных найденного пользователя")
             name = self.wait_element(browser, target_locator=self.CUSTOMER_NAME)
+            name = name.text
             clean_name = name.replace("Enabled", "").strip()
             mail = self.wait_element(browser, target_locator=self.CUSTOMER_EMAIL)
+            mail = mail.text
 
             allure.attach(
                 f"Найденное имя: {clean_name}\nНайденный email: {mail}",
