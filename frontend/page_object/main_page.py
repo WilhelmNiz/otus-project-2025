@@ -101,8 +101,8 @@ class MainPage(BasePage):
             self.logger.info(f"Переход в {list_name}")
             self.wait_and_click(browser=browser, target_locator=success_action)
 
-        with allure.step(f"2. Проверить что {list_name} не пуст(-а) (ожидаемый товар: '{product_name}')"):
-            self.logger.info(f"Проверка что {list_name} не пуст(-а)")
+        with allure.step(f"2. Проверить что список не пуст (ожидаемый товар: '{product_name}')"):
+            self.logger.info(f"Проверка что список не пуст")
             items_in_list = self.wait_elements(browser, target_locator=items_locator)
             self.logger.info(f"Количество товаров в списке: {len(items_in_list)}")
             allure.attach(
