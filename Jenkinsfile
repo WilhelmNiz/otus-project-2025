@@ -61,7 +61,10 @@ pipeline {
 
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
-                    pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
+
+                    if (params.REMOTE.toBoolean()) {
+                        pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
+                    }
 
                     if (params.HEADLESS.toBoolean()) {
                         pytestCmd += " --headless"
