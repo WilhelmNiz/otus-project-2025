@@ -54,7 +54,7 @@ pipeline {
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
 
                     if (params.REMOTE.toBoolean()) {
-                        pytestCmd += "pytestCmd += " -n ${params.THREADS}""
+                        pytestCmd += "-n ${params.THREADS}""
                     }
 
                     def marks = ""
