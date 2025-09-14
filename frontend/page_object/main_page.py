@@ -77,9 +77,7 @@ class MainPage(BasePage):
             with allure.step("4. Проверить уведомление об успешном добавлении"):
                 self.logger.info("Проверка уведомления об успешном добавлении")
                 self.wait_element(browser=random_product, target_locator=self.header.ALERT_SUCCESS)
-
-                if list_type == "wishlist":
-                    self.wait_and_click(browser=browser, target_locator=self.header.BUTTON_CLOSE_ALERT)
+                self.wait_and_click(browser=browser, target_locator=self.header.BUTTON_CLOSE_ALERT)
 
             self.logger.info(f"Товар '{product_name}' успешно добавлен в {list_name}")
             return product_name
