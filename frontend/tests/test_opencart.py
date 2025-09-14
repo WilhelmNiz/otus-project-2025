@@ -121,8 +121,8 @@ def test_select_currency_catalog(browser):
     {"firstname": "Alice", "lastname": "Smith", "password": "alice123", "role": "premium"},
     {"firstname": "Bob", "lastname": "Johnson", "password": "bob123!", "role": "vip"}
 ], ids=["standard_user", "admin_user", "customer_user", "premium_user", "vip_user"])
-@allure.feature("Управление пользователями")
-@allure.story("Регистрация новых пользователей с различными ролями")
+@allure.feature("Администрирование OpenCart")
+@allure.story("Регистрация новых пользователей через админ панель")
 def test_opencart_add_user(browser, user_data):
     """Тест регистрации нового пользователя в магазине opencart"""
     firstname = user_data["firstname"]
@@ -186,6 +186,7 @@ def test_add_random_product_to_wish_list(browser):
     """Тест добавления в список желаний"""
     ap = AdminPage()
     cp = CatalogPage()
+
     password = 4444
 
     with allure.step("Открытие админ-панели"):

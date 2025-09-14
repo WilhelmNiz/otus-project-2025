@@ -1,5 +1,4 @@
 import random
-import time
 
 import allure
 from selenium.webdriver.common.by import By
@@ -23,9 +22,6 @@ class HeaderElements(BasePage):
     CURRENT_CURRENCY = "#form-currency > div > a > strong"
     MY_ACCOUNT_DROPDOWN = "//span[contains(text(), 'My Account')]"
     LOGIN_LINK = "//a[contains(text(), 'Login')]"
-    INPUT_EMAIL = "//input[contains(@name, 'email')]"
-    INPUT_PASSWORD = "//input[contains(@name, 'password')]"
-    BUTTON_LOGIN = "//button[contains(text(), 'Login')]"
     CONTENT = "#content"
     BUTTON_CART = "//span[contains(text(), 'Shopping Cart')]"
     BUTTON_WISH_LIST = "//span[contains(text(), 'Wish List')]"
@@ -100,13 +96,3 @@ class HeaderElements(BasePage):
     @allure.step("Кликнуть на логотип")
     def click_logo(self, browser):
         self.wait_and_click(browser=browser, target_locator=self.LOGO)
-
-    @allure.step("Авторизация пользователя")
-    def account_login(self, browser, email, password):
-        self.wait_and_click(browser=browser, target_locator=self.MY_ACCOUNT_DROPDOWN)
-        self.wait_and_click(browser=browser, target_locator=self.LOGIN_LINK)
-        time.sleep(2)
-        self.data_entry(browser=browser, target=self.INPUT_EMAIL, value=email)
-        self.data_entry(browser=browser, target=self.INPUT_PASSWORD, value=password)
-        self.wait_and_click(browser=browser, target_locator=self.BUTTON_LOGIN)
-        time.sleep(2)
