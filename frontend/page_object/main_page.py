@@ -126,8 +126,9 @@ class MainPage(BasePage):
             with allure.step("4. Проверить уведомление об успешном добавлении"):
                 self.logger.info("Проверка уведомления об успешном добавлении")
                 self.wait_element(browser=random_product, target_locator=self.header.ALERT_SUCCESS)
+                self.wait_and_click(browser=browser, target_locator=self.header.BUTTON_CLOSE_ALERT)
+
             with allure.step("5. Перейти в список желаний"):
-                time.sleep(10)
                 self.logger.info("Переход в список желаний")
                 self.wait_and_click(browser=browser, target_locator=self.header.BUTTON_WISH_LIST)
         self.logger.info(f"Товар '{product_name}' успешно добавлен в список желаний")

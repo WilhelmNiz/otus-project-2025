@@ -10,7 +10,7 @@ from frontend.page_object.base_test import BasePage
 
 
 class HeaderElements(BasePage):
-    """Элементы, которые есть на всех страницах (хедер)"""
+    """Элементы, которые есть на всех страницах"""
 
     NARBAR_MENU_DROPDOWN = "//li[contains(@class, 'nav-item dropdown')]"
     LOGO = "//img[contains(@title, 'Your Store')]"
@@ -31,6 +31,7 @@ class HeaderElements(BasePage):
     CART = "#header-cart > div > button"
     BUTTON_WISH_LIST = "//span[contains(text(), 'Wish List')]"
     ALERT_SUCCESS = "//div[contains(@class, 'alert-success')]"
+    BUTTON_CLOSE_ALERT = "//button[contains(@class, 'btn-close')] "
     PRODUCT_SHOW_ALL = "//div[contains(@class, 'dropdown-menu show')]//a[contains(text(), 'Show All')]"
     NARBAR_MENU = "//nav[contains(@id, 'menu')]"
 
