@@ -219,7 +219,7 @@ def test_add_random_product_to_wish_list(browser):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Авторизация пользователя на сайте"):
-        al.header.account_login(browser, email = email, password=password)
+        al.account_login(browser, email = email, password=password)
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser=browser)
