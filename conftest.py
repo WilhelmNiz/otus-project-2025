@@ -1,7 +1,5 @@
 import pytest
 import allure
-import os
-import tempfile
 import requests
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
@@ -29,8 +27,6 @@ def browser(request):
     remote_url = request.config.getoption("--remote_url")
     enable_vnc = request.config.getoption("--enable_vnc")
     browser_version = request.config.getoption("--browser_version")  # Получаем версию браузера
-
-    chrome_user_data_dir = None
 
     if is_remote:
         # Настройка для Selenoid
@@ -67,16 +63,12 @@ def browser(request):
     else:
         # Локальный запуск
         if browser_name in ["ch", "chrome"]:
-            chrome_user_data_dir = tempfile.mkdtemp(prefix="chrome-profile-")
             options = CHoptions()
             if headless:
                 options.add_argument("headless=new")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
-            if chrome_user_data_dir:
-                options.add_argument(f"--user-data-dir={chrome_user_data_dir}")
             driver = webdriver.Chrome(options=options)
-
         elif browser_name in ["ff", "firefox"]:
             options = FFoptions()
             if headless:
@@ -104,17 +96,6 @@ def browser(request):
 
     driver.go_to_home()
 
-    def cleanup_profile():
-        if chrome_user_data_dir and os.path.exists(chrome_user_data_dir):
-            import shutil
-            try:
-                shutil.rmtree(chrome_user_data_dir)
-                print(f"Cleaned up Chrome profile directory: {chrome_user_data_dir}")
-            except Exception as e:
-                print(f"Failed to clean up Chrome profile directory {chrome_user_data_dir}: {e}")
-
-    request.addfinalizer(cleanup_profile)
-
     return driver
 
 
@@ -139,6 +120,7 @@ def pytest_runtest_makereport(item):
                 )
             except Exception as e:
                 print(f"Не удалось сделать скриншот: {e}")
+
 
 @pytest.fixture(scope="session")
 def base_url():
