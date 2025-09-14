@@ -1,16 +1,19 @@
 import allure
 
-from frontend.page_object.main_page import MainPage
+from frontend.page_object.base_test import BasePage
+from frontend.page_object.header_elements import HeaderElements
 
 
-class AccountLoginElements(MainPage):
+class AccountLoginPage(BasePage):
     """Элементы, которые есть на всех страницах"""
 
     INPUT_EMAIL = "//input[contains(@name, 'email')]"
     INPUT_PASSWORD = "//input[contains(@name, 'password')]"
     BUTTON_LOGIN = "//button[contains(text(), 'Login')]"
 
-
+    def __init__(self):
+        super().__init__()
+        self.header = HeaderElements()
 
     @allure.step("Авторизация пользователя")
     def account_login(self, browser, email, password):

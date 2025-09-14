@@ -2,6 +2,7 @@ import allure
 import pytest
 from frontend.page_object.catalog_page import CatalogPage
 from frontend.page_object.admin_page import AdminPage
+from frontend.page_object.account_login_page import AccountLoginPage
 
 
 @pytest.mark.frontend
@@ -186,6 +187,7 @@ def test_add_random_product_to_wish_list(browser):
     """Тест добавления в список желаний"""
     ap = AdminPage()
     cp = CatalogPage()
+    al = AccountLoginPage()
 
     password = 4444
 
@@ -217,7 +219,7 @@ def test_add_random_product_to_wish_list(browser):
         cp.header.set_page_zoom(browser)
 
     with allure.step("Авторизация пользователя на сайте"):
-        cp.header.account_login(browser, email = email, password=password)
+        al.header.account_login(browser, email = email, password=password)
 
     with allure.step("Переход на главную страницу"):
         cp.header.click_logo(browser=browser)
