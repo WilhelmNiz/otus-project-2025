@@ -97,7 +97,7 @@ class MainPage(BasePage):
         self.logger.info(f"Проверка наличия товара '{product_name}' в {list_name}")
 
         items_locator = self.header.CART_ITEMS_LIST if list_type == "cart" else self.header.WISH_LIST_ITEM
-        success_action = self.header.CART if list_type == "cart" else self.header.BUTTON_WISH_LIST
+        success_action = self.header.BUTTON_CART if list_type == "cart" else self.header.BUTTON_WISH_LIST
 
         with allure.step(f"1. Перейти в {list_name}"):
             self.logger.info(f"Переход в {list_name}")
@@ -149,7 +149,7 @@ class MainPage(BasePage):
 
         with allure.step("Проверить корзину"):
             self.logger.info("Проверка корзины")
-            self.wait_element(browser, target_locator=self.header.CART, method=By.CSS_SELECTOR)
+            self.wait_element(browser, target_locator=self.header.BUTTON_CART, method=By.CSS_SELECTOR)
 
         with allure.step("Проверить карусель баннеров"):
             self.logger.info("Проверка карусели баннеров")

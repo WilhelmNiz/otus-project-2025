@@ -28,7 +28,7 @@ class HeaderElements(BasePage):
     INPUT_PASSWORD = "//input[contains(@name, 'password')]"
     BUTTON_LOGIN = "//button[contains(text(), 'Login')]"
     CONTENT = "#content"
-    CART = "#header-cart > div > button"
+    BUTTON_CART = "//span[contains(text(), 'Shopping Cart')]"
     BUTTON_WISH_LIST = "//span[contains(text(), 'Wish List')]"
     ALERT_SUCCESS = "//div[contains(@class, 'alert-success')]"
     BUTTON_CLOSE_ALERT = "//button[contains(@class, 'btn-close')] "
