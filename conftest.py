@@ -1,6 +1,6 @@
 import pytest
 import allure
-import tempfile
+import os
 import requests
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options as FFoptions
@@ -29,6 +29,7 @@ def browser(request):
     enable_vnc = request.config.getoption("--enable_vnc")
     browser_version = request.config.getoption("--browser_version")  # Получаем версию браузера
 
+    chrome_user_data_dir = None
     if is_remote:
         # Настройка для Selenoid
         capabilities = {
@@ -69,9 +70,9 @@ def browser(request):
                 options.add_argument("headless=new")
             options.add_argument("--no-sandbox")
             options.add_argument("--disable-dev-shm-usage")
-            with tempfile.TemporaryDirectory() as user_data_dir:
-                options.add_argument(f"--user-data-dir={user_data_dir}")
-                driver = webdriver.Chrome(options=options)
+            if chrome_user_data_dir:
+                options.add_argument(f"--user-data-dir={chrome_user_data_dir}")
+            driver = webdriver.Chrome(options=options)
 
         elif browser_name in ["ff", "firefox"]:
             options = FFoptions()
@@ -99,6 +100,19 @@ def browser(request):
     driver.implicitly_wait(5)
 
     driver.go_to_home()
+
+    def cleanup_profile():
+        if chrome_user_data_dir and os.path.exists(chrome_user_data_dir):
+            import shutil
+            try:
+                shutil.rmtree(chrome_user_data_dir)
+                print(f"Cleaned up Chrome profile directory: {chrome_user_data_dir}")
+            except Exception as e:
+                print(f"Failed to clean up Chrome profile directory {chrome_user_data_dir}: {e}")
+
+    request.addfinalizer(cleanup_profile)
+
+    return driver
 
     return driver
 
