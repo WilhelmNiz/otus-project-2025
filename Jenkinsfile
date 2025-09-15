@@ -56,7 +56,6 @@ pipeline {
 
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
 
-                    // Принудительно используем многопоточность для remote
                     pytestCmd += " -n ${params.THREADS}"
 
                     def marks = ""

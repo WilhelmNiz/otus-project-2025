@@ -12,7 +12,7 @@ services:
       - jenkins_home_2:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - selenoid_net  # Добавьте эту строку
+      - selenoid_net
     restart: unless-stopped
 
 volumes:
@@ -20,4 +20,4 @@ volumes:
 
 networks:
   selenoid_net:
-    external: true  # Используем внешнюю сеть
+    external: true
