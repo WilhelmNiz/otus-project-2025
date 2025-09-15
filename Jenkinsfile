@@ -39,6 +39,7 @@ pipeline {
         stage('Setup Python') {
             steps {
                 script {
+                     sh 'rm -rf venv || true'
                      sh "python3 -m venv venv"
                      sh ". venv/bin/activate && pip install --upgrade pip"
                      sh ". venv/bin/activate && pip install -r requirements.txt"
@@ -47,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Run Tests - REMOTE MODE') {
+        stage('Run Tests') {
             steps {
                 script {
                     echo "ЗАПУСК ТЕСТОВ В РЕЖИМЕ REMOTE SELENOID"
@@ -123,7 +124,7 @@ pipeline {
             echo "Режим выполнения: ${env.EXECUTION_MODE}"
         }
         success {
-            echo "✅ Тесты успешно выполнены через Remote Selenoid! Отчет Allure доступен."
+            echo "✅ Тесты успешно выполнены ! Отчет Allure доступен."
         }
         failure {
             echo "❌ В тестах найдены неудачи."
