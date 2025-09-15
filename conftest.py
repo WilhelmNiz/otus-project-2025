@@ -27,13 +27,13 @@ def browser(request):
     is_remote = request.config.getoption("--remote")
     remote_url = request.config.getoption("--remote_url")
     enable_vnc = request.config.getoption("--enable_vnc")
-    browser_version = request.config.getoption("--browser_version")  # Получаем версию браузера
+    browser_version = request.config.getoption("--browser_version")
 
     if is_remote:
         # Настройка для Selenoid
         capabilities = {
             "browserName": "chrome" if browser_name in ["ch", "chrome"] else "firefox",
-            "version": browser_version,  # Используем указанную версию или 128.0 по умолчанию
+            "version": browser_version,
             "enableVNC": enable_vnc,
         }
 
@@ -154,5 +154,5 @@ def booking_client(base_url, api_session) -> BookingClient:
 
 @pytest.fixture(scope="session")
 def auth_token(auth_client) -> str:
-    """Получаем токен через клиент — инкапсуляция!"""
+    """Получаем токен через клиент"""
     return auth_client.create_token()

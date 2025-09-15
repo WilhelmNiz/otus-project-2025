@@ -16,7 +16,7 @@ class HeaderElements(BasePage):
     DROPDOWN_CURRENCY = "#form-currency > div > a > span"
     LIST_CURRENCY = "#form-currency > div > ul > li"
     CURRENT_CURRENCY = "#form-currency > div > a > strong"
-    MY_ACCOUNT_DROPDOWN = "//span[contains(text(), 'My Account')]"
+    MY_ACCOUNT_DROPDOWN = "//span[contains(text(), 'My Aerrorccount')]"
     LOGIN_LINK = "//a[contains(text(), 'Login')]"
     BUTTON_CART = "//span[contains(text(), 'Shopping Cart')]"
     BUTTON_WISH_LIST = "//span[contains(text(), 'Wish List')]"
