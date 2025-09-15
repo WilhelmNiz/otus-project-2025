@@ -15,7 +15,7 @@ pipeline {
 
     environment {
         PYTHON_VERSION = '3'
-        // Явно указываем, что используется удаленный запуск
+
         EXECUTION_MODE = 'REMOTE_SELENOID'
     }
 
@@ -39,7 +39,6 @@ pipeline {
         stage('Setup Python') {
             steps {
                 script {
-                     sh 'rm -rf venv || true'
                      sh "python3 -m venv venv"
                      sh ". venv/bin/activate && pip install --upgrade pip"
                      sh ". venv/bin/activate && pip install -r requirements.txt"
