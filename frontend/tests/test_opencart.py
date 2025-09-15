@@ -28,6 +28,7 @@ def test_admin_login_logout(browser):
 @pytest.mark.frontend
 @allure.feature("Управление товарами")
 @allure.story("Добавление товара в корзину")
+@allure.title("Тест добавления товара в корзину")
 def test_add_random_product_to_cart(browser):
     """Тест добавления товара в корзину"""
     with allure.step("Инициализация страницы каталога"):
@@ -75,6 +76,7 @@ def test_select_currency_title(browser):
             name="Выбранная валюта",
             attachment_type=allure.attachment_type.TEXT
         )
+        allure.dynamic.title(f"Смена валюты на главной странице {new_currency}")
 
     with allure.step("Корректировка масштаба после изменений"):
         cp.header.set_page_zoom(browser)
@@ -118,6 +120,7 @@ def test_select_currency_catalog(browser):
             name="Выбранная валюта",
             attachment_type=allure.attachment_type.TEXT
         )
+        allure.dynamic.title(f"Смена валюты в каталоге {new_currency}")
 
     with allure.step("Корректировка отображения страницы"):
         cp.header.set_page_zoom(browser)
@@ -234,7 +237,6 @@ def test_add_random_product_to_wish_list(browser):
             lastname="Test123",
             password=password
         )
-        allure.dynamic.title(f"Добавление пользователя")
 
         allure.attach(
             f"Имя: {added_firstname}\nФамилия: {added_lastname}\nEmail: {email}",
