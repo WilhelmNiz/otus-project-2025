@@ -3,7 +3,7 @@ pipeline {
 
     parameters {
         string(name: 'SELENOID_URL', defaultValue: 'http://ggr:4444/wd/hub', description: 'Адрес Selenoid хаба')
-        string(name: 'OPENCART_URL', defaultValue: 'http://192.168.31.202:8081/', description: 'Адрес приложения OpenCart')
+        string(name: 'OPENCART_URL', defaultValue: 'http://192.168.31.179:8081/', description: 'Адрес приложения OpenCart')
         choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Браузер для запуска тестов')
         choice(name: 'BROWSER_VERSION', choices: ['128.0', '127.0'], description: 'Версия браузера, передается только в случае REMOTE=true')
         string(name: 'THREADS', defaultValue: '1', description: 'Количество потоков (workers) для pytest')
