@@ -10,6 +10,7 @@ from frontend.page_object.main_page import MainPage
 @pytest.mark.frontend
 @allure.feature("Администрирование OpenCart")
 @allure.story("Авторизация в админ-панели")
+@allure.title("Тест авторизации и выхода из админ-панели")
 def test_admin_login_logout(browser):
     """Тест авторизации и выхода из админ-панели"""
     with allure.step("Инициализация страницы администрирования"):
@@ -28,7 +29,6 @@ def test_admin_login_logout(browser):
 @pytest.mark.frontend
 @allure.feature("Управление товарами")
 @allure.story("Добавление товара в корзину")
-@allure.title("Тест добавления товара в корзину")
 def test_add_random_product_to_cart(browser):
     """Тест добавления товара в корзину"""
     with allure.step("Инициализация страницы каталога"):
