@@ -8,14 +8,15 @@ pipeline {
         choice(name: 'BROWSER_VERSION', choices: ['128.0', '127.0'], description: 'Версия браузера, передается только в случае REMOTE=true')
         string(name: 'THREADS', defaultValue: '1', description: 'Количество потоков (workers) для pytest')
         booleanParam(name: 'HEADLESS', defaultValue: false, description: 'Запуск в headless-режиме')
-        booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid')
+        booleanParam(name: 'REMOTE', defaultValue: true, description: 'Использовать удаленный Selenoid (ВКЛЮЧЕНО)')
         booleanParam(name: 'ENABLE_VNC', defaultValue: false, description: 'Включить VNC')
         choice(name: 'TEST_MARK', choices: ['all', 'booking', 'auth', 'backend', 'frontend'], description: 'Марка тестов для запуска')
     }
 
     environment {
         PYTHON_VERSION = '3'
-        RUN_MODE = "${params.REMOTE.toBoolean() ? 'REMOTE SELENOID' : 'LOCAL'}"
+        // Явно указываем, что используется удаленный запуск
+        EXECUTION_MODE = 'REMOTE_SELENOID'
     }
 
     stages {
@@ -46,32 +47,17 @@ pipeline {
             }
         }
 
-        stage('Remote Selenoid Configuration') {
-            when {
-                expression { params.REMOTE.toBoolean() }
-            }
+        stage('Run Tests - REMOTE MODE') {
             steps {
                 script {
-                    echo "🚀 НАСТРОЙКА УДАЛЕННОГО ЗАПУСКА ЧЕРЕЗ SELENOID"
-                    echo "📍 Selenoid Hub: ${params.SELENOID_URL}"
-                    echo "🌐 Браузер: ${params.BROWSER} ${params.BROWSER_VERSION}"
-                    echo "📺 VNC: ${params.ENABLE_VNC ? 'ВКЛЮЧЕНО' : 'ВЫКЛЮЧЕНО'}"
-                    echo "🧵 Потоков: ${params.THREADS}"
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                script {
-                    sh 'rm -rf /tmp/.com.google.Chrome.* || true'
-                    sh 'rm -rf /tmp/chrome_* || true'
+                    echo "ЗАПУСК ТЕСТОВ В РЕЖИМЕ REMOTE SELENOID"
+                    echo "Selenoid Hub: ${params.SELENOID_URL}"
+                    echo "Браузер: ${params.BROWSER} ${params.BROWSER_VERSION}"
 
                     def pytestCmd = ". venv/bin/activate && python -m pytest "
 
-                    if (params.REMOTE.toBoolean()) {
-                        pytestCmd += " -n ${params.THREADS}"
-                    }
+                    // Принудительно используем многопоточность для remote
+                    pytestCmd += " -n ${params.THREADS}"
 
                     def marks = ""
                     if (params.TEST_MARK != 'all') {
@@ -84,25 +70,22 @@ pipeline {
 
                     pytestCmd += " --browser ${params.BROWSER}"
                     pytestCmd += " --url ${params.OPENCART_URL}"
-
-                    if (params.REMOTE.toBoolean()) {
-                        pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
-                    }
+                    pytestCmd += " --browser_version ${params.BROWSER_VERSION}"
 
                     if (params.HEADLESS.toBoolean()) {
                         pytestCmd += " --headless"
                     }
-                    if (params.REMOTE.toBoolean()) {
-                        pytestCmd += " --remote"
-                        pytestCmd += " --remote_url ${params.SELENOID_URL}"
-                    }
+
+                    pytestCmd += " --remote"
+                    pytestCmd += " --remote_url ${params.SELENOID_URL}"
+
                     if (params.ENABLE_VNC.toBoolean()) {
                         pytestCmd += " --enable_vnc"
                     }
 
                     pytestCmd += " --alluredir=${env.WORKSPACE}/allure-results"
 
-                    echo "🔧 Запускаем команду: ${pytestCmd}"
+                    echo "🔧 Команда запуска: ${pytestCmd}"
                     sh pytestCmd
                 }
             }
@@ -136,20 +119,17 @@ pipeline {
 
     post {
         always {
-            echo "🏁 Сборка завершена: ${currentBuild.result}"
-            echo "📊 Режим запуска: ${env.RUN_MODE}"
+            echo "Сборка завершена: ${currentBuild.result}"
+            echo "Режим выполнения: ${env.EXECUTION_MODE}"
         }
         success {
-            echo "✅ Тесты прошли успешно! Отчет Allure доступен."
-            echo "🌐 Запуск выполнен через: ${env.RUN_MODE}"
+            echo "✅ Тесты успешно выполнены через Remote Selenoid! Отчет Allure доступен."
         }
         failure {
             echo "❌ В тестах найдены неудачи."
-            echo "🌐 Режим запуска: ${env.RUN_MODE}"
         }
         unstable {
             echo "⚠️ Сборка помечена как нестабильная."
-            echo "🌐 Режим запуска: ${env.RUN_MODE}"
         }
     }
 }
